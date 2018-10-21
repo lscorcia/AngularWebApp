@@ -14,6 +14,11 @@ export const navItems = [
     icon: 'icon-drop'
   },
   {
+    name: 'Orders',
+    url: '/orders',
+    icon: 'icon-drop'
+  },
+  {
     title: true,
     name: 'Tokens'
   },

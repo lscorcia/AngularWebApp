@@ -61,6 +61,10 @@ export const routes: Routes = [
       {
         path: 'fetch-data',
         loadChildren: './views/fetch-data/fetch-data.module#FetchDataModule'
+      },
+      {
+        path: 'orders',
+        loadChildren: './views/orders/orders.module#OrdersModule'
       }
     ]
   }
