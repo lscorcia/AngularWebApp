@@ -6,11 +6,11 @@ export const navItems = [
   },
   {
     title: true,
-    name: 'Orders'
+    name: 'Weather'
   },
   {
-    name: 'Orders',
-    url: '/orders',
+    name: 'Weather',
+    url: '/fetch-data',
     icon: 'icon-drop'
   },
   {

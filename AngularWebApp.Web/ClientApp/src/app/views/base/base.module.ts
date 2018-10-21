@@ -10,7 +10,7 @@ import { BaseRoutingModule } from './base-routing.module';
   imports: [
     CommonModule,
     FormsModule,
-    BaseRoutingModule,
+    BaseRoutingModule
   ],
   declarations: [
   ]

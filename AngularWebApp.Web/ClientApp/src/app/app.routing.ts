@@ -57,6 +57,10 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: './views/dashboard/dashboard.module#DashboardModule'
+      },
+      {
+        path: 'fetch-data',
+        loadChildren: './views/fetch-data/fetch-data.module#FetchDataModule'
       }
     ]
   }
