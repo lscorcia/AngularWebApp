@@ -1,14 +1,14 @@
-import { AppPage } from './app.po';
+import { CoreUIPage } from './app.po';
 
-describe('App', () => {
-  let page: AppPage;
+describe('core-ui App', function() {
+  let page: CoreUIPage;
 
   beforeEach(() => {
-    page = new AppPage();
+    page = new CoreUIPage();
   });
 
-  it('should display welcome message', () => {
+  it('should display footer containing creativeLabs', () => {
     page.navigateTo();
-    expect(page.getMainHeading()).toEqual('Hello, world!');
+    expect(page.getParagraphText()).toContain('creativeLabs');
   });
 });

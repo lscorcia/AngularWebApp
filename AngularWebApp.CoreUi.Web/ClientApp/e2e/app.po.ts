@@ -1,11 +1,11 @@
-import { browser, by, element } from 'protractor';
+import { browser, element, by } from 'protractor';
 
-export class AppPage {
+export class CoreUIPage {
   navigateTo() {
     return browser.get('/');
   }
 
-  getMainHeading() {
-    return element(by.css('app-root h1')).getText();
+  getParagraphText() {
+    return element(by.tagName('footer')).getText();
   }
 }
