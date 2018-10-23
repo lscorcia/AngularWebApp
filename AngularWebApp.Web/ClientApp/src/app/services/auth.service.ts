@@ -1,12 +1,12 @@
 import { Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { JwtHelper } from 'angular2-jwt';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class AuthService {
-  constructor(private http: HttpClient, private jwtHelper: JwtHelper,
+  constructor(private http: HttpClient, public jwtHelper: JwtHelperService, 
     @Inject('BASE_URL') private baseUrl: string) {
 
   }

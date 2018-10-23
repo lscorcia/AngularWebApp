@@ -31,10 +31,9 @@ namespace AngularWebApp.Web.Controllers
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-                string currentUrl = this.Request.Scheme + "://" + this.Request.Host;
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: currentUrl,
-                    audience: currentUrl,
+                    issuer: "AngularWebApp.Web",
+                    audience: "AngularWebApp.Web.Client",
                     claims: new List<Claim>(),
                     expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: signinCredentials

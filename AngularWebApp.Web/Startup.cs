@@ -33,8 +33,8 @@ namespace AngularWebApp.Web
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
 
-                        ValidIssuer = "http://localhost:52582",
-                        ValidAudience = "http://localhost:52582",
+                        ValidIssuer = "AngularWebApp.Web",
+                        ValidAudience = "AngularWebApp.Web.Client",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
                     };
                 });

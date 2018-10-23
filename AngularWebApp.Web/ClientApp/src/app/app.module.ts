@@ -3,9 +3,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { JwtHelper } from 'angular2-jwt';
+import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AuthService } from './services/auth.service';
 import { AuthGuard } from './guards/auth-guard.service';
+import { Injector } from '@angular/core';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -45,6 +46,16 @@ import { AppRoutingModule } from './app.routing';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
+export let AppInjector: Injector;
+
+// JwtHelper cruft
+export function tokenGetter() {
+  return localStorage.getItem('jwt');
+}
+
+export function jwtOptionsFactory() {
+  return { tokenGetter: tokenGetter, whitelistedDomains: [AppInjector.get('BASE_URL')] };
+}
 
 @NgModule({
   imports: [
@@ -60,6 +71,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
     TabsModule.forRoot(),
     ChartsModule,
     HttpClientModule,
+    JwtModule.forRoot({ jwtOptionsProvider: { provide: JWT_OPTIONS, useFactory: jwtOptionsFactory } }),
     FormsModule
   ],
   declarations: [
@@ -71,11 +83,15 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
     LogoutComponent,
     RegisterComponent
   ],
-  providers: [JwtHelper, AuthService, AuthGuard,
+  providers: [ AuthService, AuthGuard,
   {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }],
   bootstrap: [ AppComponent ]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private injector: Injector) {
+    AppInjector = this.injector;
+  }
+}
