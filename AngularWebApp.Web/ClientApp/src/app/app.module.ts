@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http'; 
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { JwtHelper } from 'angular2-jwt';
+import { AuthService } from './services/auth.service';
 import { AuthGuard } from './guards/auth-guard.service';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -70,7 +71,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
     LogoutComponent,
     RegisterComponent
   ],
-  providers: [ JwtHelper, AuthGuard,
+  providers: [JwtHelper, AuthService, AuthGuard,
   {
     provide: LocationStrategy,
     useClass: HashLocationStrategy

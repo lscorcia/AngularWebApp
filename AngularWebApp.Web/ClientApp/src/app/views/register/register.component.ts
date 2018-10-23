@@ -1,7 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from "@angular/router";
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -11,27 +11,21 @@ export class RegisterComponent {
   registerMessage: string;
   savedSuccessfully: boolean;
 
-  constructor(private router: Router, private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
+  constructor(private router: Router, private authService: AuthService) {
   }
 
   register(form: NgForm) {
-    let credentials = JSON.stringify(form.value);
-    this.http.post(this.baseUrl + "api/auth/register", credentials, {
-      headers: new HttpHeaders({
-        "Content-Type": "application/json"
-      })
-    }).subscribe(response => {
-      this.savedSuccessfully = true;
-      this.registerMessage = "User has been registered successfully, you will be redicted to login page in 2 seconds.";
-    }, err => {
-      this.savedSuccessfully = false;
-      var errors = [];
-      for (var key in err.error) {
-        for (var i = 0; i < err.error[key].length; i++) {
-          errors.push(err.error[key][i]);
-        }
-      }
-      this.registerMessage = "Failed to register user due to:" + errors.join(' ');
-    });
+    this.authService.register(form.value.email, form.value.username, form.value.password, form.value.confirmpassword)
+      .subscribe((response) => {
+        this.savedSuccessfully = (<any>response).savedSuccessfully;
+        this.registerMessage = "User has been registered successfully, you will be redirected to login page in 2 seconds.";
+
+        setTimeout(() => {
+          this.router.navigate(['/']);
+        }, 2000); 
+      }, (err) => {
+        this.savedSuccessfully = (<any>err).savedSuccessfully;
+        this.registerMessage = (<any>err).registerMessage;
+      });
   }
 }
