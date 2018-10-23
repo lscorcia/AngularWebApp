@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'orders',
@@ -8,10 +8,21 @@ import { HttpClient } from '@angular/common/http';
 export class OrdersComponent {
   public orders: Order[];
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<Order[]>(baseUrl + 'api/Orders/Get').subscribe(result => {
-      this.orders = result;
-    }, error => console.error(error));
+  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
+  }
+
+  ngOnInit() {
+    let token = localStorage.getItem("jwt");
+    this.http.get<Order[]>(this.baseUrl + "api/Orders/Get", {
+      headers: new HttpHeaders({
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      })
+    }).subscribe(response => {
+      this.orders = response;
+    }, err => {
+      console.log(err);
+    });
   }
 }
 

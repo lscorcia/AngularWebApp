@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AngularWebApp.Web.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class OrdersController : Controller
     {
         [HttpGet("[action]")]

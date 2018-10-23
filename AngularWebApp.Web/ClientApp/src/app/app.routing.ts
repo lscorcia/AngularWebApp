@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from './guards/auth-guard.service';
 
 // Import Containers
 import { DefaultLayoutComponent } from './containers';
@@ -7,6 +8,7 @@ import { DefaultLayoutComponent } from './containers';
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
+import { LogoutComponent } from './views/logout/logout.component';
 import { RegisterComponent } from './views/register/register.component';
 
 export const routes: Routes = [
@@ -37,6 +39,13 @@ export const routes: Routes = [
     }
   },
   {
+    path: 'logout',
+    component: LogoutComponent,
+    data: {
+      title: 'Logout Page'
+    }
+  },
+  {
     path: 'register',
     component: RegisterComponent,
     data: {
@@ -64,7 +73,8 @@ export const routes: Routes = [
       },
       {
         path: 'orders',
-        loadChildren: './views/orders/orders.module#OrdersModule'
+        loadChildren: './views/orders/orders.module#OrdersModule',
+        canActivate: [AuthGuard]
       }
     ]
   }
