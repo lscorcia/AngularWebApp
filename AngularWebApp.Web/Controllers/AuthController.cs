@@ -23,6 +23,9 @@ namespace AngularWebApp.Web.Controllers
                 return BadRequest("Invalid client request");
             }
 
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (user.UserName == "johndoe" && user.Password == "def@123")
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
@@ -43,6 +46,16 @@ namespace AngularWebApp.Web.Controllers
             {
                 return Unauthorized();
             }
+        }
+
+        // GET api/values
+        [HttpPost, Route("register")]
+        public IActionResult Register([FromBody]RegisterModel user)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok();
         }
     }
 }

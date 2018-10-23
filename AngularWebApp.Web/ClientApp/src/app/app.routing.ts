@@ -16,6 +16,7 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
+    canActivate: [AuthGuard]
   },
   {
     path: '404',
@@ -65,11 +66,13 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        loadChildren: './views/dashboard/dashboard.module#DashboardModule'
+        loadChildren: './views/dashboard/dashboard.module#DashboardModule',
+        canActivate: [AuthGuard]
       },
       {
         path: 'fetch-data',
-        loadChildren: './views/fetch-data/fetch-data.module#FetchDataModule'
+        loadChildren: './views/fetch-data/fetch-data.module#FetchDataModule',
+        canActivate: [AuthGuard]
       },
       {
         path: 'orders',
