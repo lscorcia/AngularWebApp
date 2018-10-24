@@ -15,7 +15,8 @@ export class AuthService {
 
   constructor(private http: HttpClient, public jwtHelper: JwtHelperService, 
     @Inject('BASE_URL') private baseUrl: string) {
-
+    const token = localStorage.getItem('jwt');
+    this.AuthInfo = this.buildAuthInfo(token);
   }
 
   login(username: string, password: string) {
