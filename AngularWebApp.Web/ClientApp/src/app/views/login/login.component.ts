@@ -28,6 +28,16 @@ export class LoginComponent {
       });
   }
 
+  windowsLogin() {
+    this.authService.windowsLogin()
+      .subscribe(response => {
+        this.loginMessage = null;
+        this.router.navigate(["/"]);
+      }, err => {
+        this.loginMessage = "Login fallito";
+      });
+  }
+
   ngOnDestroy() {
     document.querySelector('body').classList.remove('justify-content-center');
   }

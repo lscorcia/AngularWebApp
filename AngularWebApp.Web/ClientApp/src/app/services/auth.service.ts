@@ -4,8 +4,15 @@ import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Observable } from 'rxjs/Observable';
 
+export class AuthInfo {
+  public UserName: string; 
+  public Email: string;
+}
+
 @Injectable()
 export class AuthService {
+  public AuthInfo: AuthInfo; 
+
   constructor(private http: HttpClient, public jwtHelper: JwtHelperService, 
     @Inject('BASE_URL') private baseUrl: string) {
 
@@ -20,7 +27,7 @@ export class AuthService {
         })
       }).subscribe(response => {
         var token = (<any>response).token;
-        this.setSession(username, token);
+        this.setSession(token);
 
         observer.next(token);
         observer.complete();
@@ -30,27 +37,47 @@ export class AuthService {
     });
   }
 
-  private setSession(userName, token) {
-    localStorage.setItem('userName', userName);
+  windowsLogin() {
+    return new Observable((observer) => {
+      return this.http.post(this.baseUrl + "api/auth/windowslogin", '')
+        .subscribe(response => {
+          var token = (<any>response).token;
+          this.setSession(token);
+
+          observer.next(token);
+          observer.complete();
+        }, err => {
+          observer.error(err);
+        });
+    });
+  }
+
+  private setSession(token) {
     localStorage.setItem('jwt', token);
-    console.log(this.jwtHelper.decodeToken(token));
+    this.AuthInfo = this.buildAuthInfo(token);
   }
 
   logout() {
-    localStorage.removeItem('userName');
     localStorage.removeItem("jwt");
   }
 
   public isLoggedIn() {
     const token = localStorage.getItem('jwt');
 
-    // Check whether the token is expired and return
-    // true or false
+    // Check whether the token is expired
     return token && !this.jwtHelper.isTokenExpired(token);
   }
 
-  getUserName() {
-    return localStorage.getItem('userName');
+  private buildAuthInfo(token): AuthInfo {
+    var authInfo = new AuthInfo();
+
+    if (token) {
+      var decodedContent = this.jwtHelper.decodeToken(token);
+      authInfo.UserName = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+      authInfo.Email = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email'];
+    }
+
+    return authInfo;
   }
 
   isLoggedOut() {
