@@ -14,6 +14,10 @@ export class RegisterComponent {
   constructor(private router: Router, private authService: AuthService) {
   }
 
+  ngOnInit() {
+    document.querySelector('body').classList.add('justify-content-center');
+  }
+
   register(form: NgForm) {
     this.authService.register(form.value.email, form.value.username, form.value.password, form.value.confirmpassword)
       .subscribe((response) => {
@@ -27,5 +31,9 @@ export class RegisterComponent {
         this.savedSuccessfully = (<any>err).savedSuccessfully;
         this.registerMessage = (<any>err).registerMessage;
       });
+  }
+
+  ngOnDestroy() {
+    document.querySelector('body').classList.remove('justify-content-center');
   }
 }

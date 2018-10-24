@@ -1,7 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from "@angular/router";
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -12,9 +11,11 @@ export class LoginComponent {
   loginMessage: string;
 
   constructor(private router: Router,
-    private http: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string,
     private authService: AuthService) {
+  }
+
+  ngOnInit() {
+    document.querySelector('body').classList.add('justify-content-center');
   }
 
   login(form: NgForm) {
@@ -25,5 +26,9 @@ export class LoginComponent {
       }, err => {
         this.loginMessage = "Credenziali errate";
       });
+  }
+
+  ngOnDestroy() {
+    document.querySelector('body').classList.remove('justify-content-center');
   }
 }
