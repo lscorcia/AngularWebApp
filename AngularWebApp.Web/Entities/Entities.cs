@@ -9,6 +9,7 @@ namespace AngularWebApp.Web.Entities
     public class RefreshToken
     {
         [Key]
+        [MaxLength(128)]
         public string Id { get; set; }
         [Required]
         [MaxLength(50)]

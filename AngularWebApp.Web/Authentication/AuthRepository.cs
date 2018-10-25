@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using AngularWebApp.Web.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace AngularWebApp.Web.Authentication
 {
@@ -11,9 +13,12 @@ namespace AngularWebApp.Web.Authentication
     {
         private AuthContext _ctx;
 
-        public AuthRepository()
+        private readonly IConfiguration configuration;
+
+        public AuthRepository(IConfiguration config)
         {
-            _ctx = new AuthContext();
+            configuration = config;
+            _ctx = new AuthContext(configuration.GetConnectionString("AuthContext"));
         }
 
         public void Dispose()
@@ -57,7 +62,6 @@ namespace AngularWebApp.Web.Authentication
         public async Task<RefreshToken> FindRefreshToken(string refreshTokenId)
         {
             var refreshToken = await _ctx.RefreshTokens.FindAsync(refreshTokenId);
-
             return refreshToken;
         }
 

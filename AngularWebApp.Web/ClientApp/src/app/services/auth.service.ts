@@ -21,16 +21,17 @@ export class AuthService {
 
   login(username: string, password: string) {
     return new Observable((observer) => {
-      let credentials = JSON.stringify({ 'username': username, 'password': password });
+      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web', 'username': username, 'password': password });
       return this.http.post(this.baseUrl + "api/auth/login", credentials, {
         headers: new HttpHeaders({
           "Content-Type": "application/json"
         })
       }).subscribe(response => {
-        var token = (<any>response).token;
-        this.setSession(token);
+        var accessToken = (<any>response).accessToken;
+        var refreshToken = (<any>response).refreshToken;
+        this.setSession(accessToken, refreshToken);
 
-        observer.next(token);
+        observer.next(accessToken);
         observer.complete();
       }, err => {
         observer.error(err);
@@ -40,12 +41,18 @@ export class AuthService {
 
   windowsLogin() {
     return new Observable((observer) => {
-      return this.http.post(this.baseUrl + "api/auth/windowslogin", '')
+      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web' });
+      return this.http.post(this.baseUrl + "api/auth/windowslogin", credentials, {
+          headers: new HttpHeaders({
+            "Content-Type": "application/json"
+          })
+        })
         .subscribe(response => {
-          var token = (<any>response).token;
-          this.setSession(token);
+          var accessToken = (<any>response).accessToken;
+          var refreshToken = (<any>response).refreshToken;
+          this.setSession(accessToken, refreshToken);
 
-          observer.next(token);
+          observer.next(accessToken);
           observer.complete();
         }, err => {
           observer.error(err);
@@ -53,13 +60,15 @@ export class AuthService {
     });
   }
 
-  private setSession(token) {
-    localStorage.setItem('jwt', token);
-    this.AuthInfo = this.buildAuthInfo(token);
+  private setSession(accessToken, refreshToken) {
+    localStorage.setItem('jwt', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    this.AuthInfo = this.buildAuthInfo(accessToken);
   }
 
   logout() {
     localStorage.removeItem("jwt");
+    localStorage.removeItem("refreshToken");
   }
 
   public isLoggedIn() {

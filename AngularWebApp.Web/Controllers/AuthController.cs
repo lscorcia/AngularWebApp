@@ -12,6 +12,7 @@ using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AngularWebApp.Web.Controllers
@@ -20,6 +21,13 @@ namespace AngularWebApp.Web.Controllers
     public class AuthController : Controller
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+
+        private readonly IConfiguration configuration;
+
+        public AuthController(IConfiguration config)
+        {
+            configuration = config;
+        }
 
         // GET api/values
         [HttpPost, Route("login")]
@@ -37,12 +45,14 @@ namespace AngularWebApp.Web.Controllers
             {
                 var claims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.Name, User.Identity.Name),
-                    new Claim(ClaimTypes.Email, User.Identity.Name),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Email, user.UserName),
                 };
-                var tokenString = GenerateToken(claims);
 
-                return Ok(new { Token = tokenString, RefreshToken = await NewRefreshToken(User.Identity.Name, claims) });
+                var accessTokenString = GenerateAccessTokenString(claims);
+                var refreshTokenString = await NewRefreshToken(user.ClientId, user.UserName, accessTokenString);
+
+                return Ok(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
             }
             else
             {
@@ -52,7 +62,7 @@ namespace AngularWebApp.Web.Controllers
 
         [HttpPost, Route("windowslogin")]
         [Authorize(AuthenticationSchemes = "Windows")]
-        public async Task<IActionResult> WindowsLogin()
+        public async Task<IActionResult> WindowsLogin([FromBody]WindowsLoginModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -62,9 +72,11 @@ namespace AngularWebApp.Web.Controllers
                 new Claim(ClaimTypes.Name, User.Identity.Name),
                 new Claim(ClaimTypes.Email, User.Identity.Name),
             };
-            var tokenString = GenerateToken(claims);
 
-            return Ok(new { Token = tokenString, RefreshToken = await NewRefreshToken(User.Identity.Name, claims) });
+            var accessTokenString = GenerateAccessTokenString(claims);
+            var refreshTokenString = await NewRefreshToken(model.ClientId, User.Identity.Name, accessTokenString);
+
+            return Ok(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
         }
 
         // GET api/values
@@ -77,49 +89,52 @@ namespace AngularWebApp.Web.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Refresh(string token, string refreshToken)
+        [HttpPost, Route("refresh")]
+        public async Task<IActionResult> Refresh([FromBody]RefreshTokenModel model)
         {
-            using (AuthRepository rpAuth = new AuthRepository())
-            {
-                var principal = GetPrincipalFromExpiredToken(token);
-                var username = principal.Identity.Name;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                var savedRefreshToken = await rpAuth.FindRefreshToken(username); ; //retrieve the refresh token from a data store
-                if (savedRefreshToken.ProtectedTicket != refreshToken)
-                    throw new SecurityTokenException("Invalid refresh token");
+            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+
+            using (AuthRepository rpAuth = new AuthRepository(configuration))
+            {
+                var savedRefreshToken = await rpAuth.FindRefreshToken(model.RefreshToken); // retrieve the refresh token from a data store
+                if (savedRefreshToken == null || 
+                    savedRefreshToken.ClientId != model.ClientId ||
+                    savedRefreshToken.ProtectedTicket != model.AccessToken)
+                    return BadRequest("Invalid refresh token");
 
                 await rpAuth.RemoveRefreshToken(savedRefreshToken);
 
-                var newJwtToken = await NewRefreshToken(principal.Identity.Name, principal.Claims);
+                var accessTokenString = GenerateAccessTokenString(principal.Claims);
+                var refreshTokenString = await NewRefreshToken(model.ClientId, principal.Identity.Name, accessTokenString);
 
-                return new ObjectResult(new
-                {
-                    token = newJwtToken,
-                    refreshToken = newJwtToken
-                });
+                return new ObjectResult(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
             }
         }
 
-        private async Task<string> NewRefreshToken(string username, IEnumerable<Claim> claims)
+        #region Private Helpers
+        private async Task<string> NewRefreshToken(string clientId, string username, string accessToken)
         {
-            using (AuthRepository rpAuth = new AuthRepository())
+            var newRefreshTokenString = GenerateRefreshTokenString();
+
+            var newRefreshToken = new RefreshToken();
+            newRefreshToken.Id = newRefreshTokenString;
+            newRefreshToken.ClientId = clientId;
+            newRefreshToken.Subject = username;
+            newRefreshToken.ProtectedTicket = accessToken;
+            newRefreshToken.IssuedUtc = DateTime.UtcNow;
+            newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
+            using (AuthRepository rpAuth = new AuthRepository(configuration))
             {
-                var newJwtToken = GenerateToken(claims);
-                var newRefreshToken = GenerateRefreshToken();
-
-                var newNewRefreshToken = new RefreshToken();
-                newNewRefreshToken.ProtectedTicket = newRefreshToken;
-                newNewRefreshToken.IssuedUtc = DateTime.UtcNow;
-                newNewRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
-                newNewRefreshToken.Subject = username;
-                await rpAuth.AddRefreshToken(newNewRefreshToken);
-
-                return newJwtToken;
+                await rpAuth.AddRefreshToken(newRefreshToken);
             }
+
+            return newRefreshTokenString;
         }
 
-        private string GenerateToken(IEnumerable<Claim> claims)
+        private string GenerateAccessTokenString(IEnumerable<Claim> claims)
         {
             var jwt = new JwtSecurityToken(issuer: "AngularWebApp.Web",
                 audience: "AngularWebApp.Web.Client",
@@ -129,10 +144,11 @@ namespace AngularWebApp.Web.Controllers
                 signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
+            // The method is called WriteToken but returns a string
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
-        public string GenerateRefreshToken()
+        private string GenerateRefreshTokenString()
         {
             var randomNumber = new byte[32];
             using (var rng = RandomNumberGenerator.Create())
@@ -146,21 +162,27 @@ namespace AngularWebApp.Web.Controllers
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateAudience = false, //you might want to validate the audience and issuer depending on your use case
-                ValidateIssuer = false,
+                ValidateAudience = true,
+                ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("the server key used to sign the JWT token is here, use more than 16 chars")),
-                ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
+                ValidateLifetime = false, // Here we are saying that we don't care about the token's expiration date
+
+                ValidIssuer = "AngularWebApp.Web",
+                ValidAudience = "AngularWebApp.Web.Client",
+                IssuerSigningKey = _signingKey
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
+
             SecurityToken securityToken;
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
+
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
         }
+        #endregion
     }
 }
