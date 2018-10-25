@@ -26,7 +26,7 @@ namespace AngularWebApp.Web.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {

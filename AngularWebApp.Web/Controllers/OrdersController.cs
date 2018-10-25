@@ -12,6 +12,7 @@ namespace AngularWebApp.Web.Controllers
     public class OrdersController : Controller
     {
         [HttpGet("[action]")]
+        [Authorize]
         public IEnumerable<Order> Get()
         {
             return Order.CreateOrders();

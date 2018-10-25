@@ -7,6 +7,7 @@ import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AuthService } from './services/auth.service';
 import { AuthGuard } from './guards/auth-guard.service';
 import { Injector } from '@angular/core';
+import { parse } from 'url';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -46,15 +47,20 @@ import { AppRoutingModule } from './app.routing';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
-export let AppInjector: Injector;
 
 // JwtHelper cruft
-export function tokenGetter() {
-  return localStorage.getItem('jwt');
-}
+export function jwtOptionsFactory(injector: Injector) {
+  var baseUrl = injector.get('BASE_URL');
+  var requestUrl = parse(baseUrl, false, true);
 
-export function jwtOptionsFactory() {
-  return { tokenGetter: tokenGetter, whitelistedDomains: [AppInjector.get('BASE_URL')] };
+  return {
+    tokenGetter: () => { return localStorage.getItem('jwt'); },
+    whitelistedDomains: [requestUrl.host],
+    blacklistedRoutes: [
+      new RegExp(baseUrl + 'api/auth/'),
+      new RegExp(baseUrl + 'sso/auth/')
+    ]
+  };
 }
 
 @NgModule({
@@ -70,8 +76,8 @@ export function jwtOptionsFactory() {
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
+    JwtModule.forRoot({ jwtOptionsProvider: { provide: JWT_OPTIONS, useFactory: jwtOptionsFactory, deps: [Injector] } }),
     HttpClientModule,
-    JwtModule.forRoot({ jwtOptionsProvider: { provide: JWT_OPTIONS, useFactory: jwtOptionsFactory } }),
     FormsModule
   ],
   declarations: [
@@ -90,8 +96,4 @@ export function jwtOptionsFactory() {
   }],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-  constructor(private injector: Injector) {
-    AppInjector = this.injector;
-  }
-}
+export class AppModule {}

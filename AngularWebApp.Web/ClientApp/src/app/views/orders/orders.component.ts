@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'orders',
@@ -12,13 +12,8 @@ export class OrdersComponent {
   }
 
   ngOnInit() {
-    let token = localStorage.getItem("jwt");
-    this.http.get<Order[]>(this.baseUrl + "api/Orders/Get", {
-      headers: new HttpHeaders({
-        "Authorization": "Bearer " + token,
-        "Content-Type": "application/json"
-      })
-    }).subscribe(response => {
+    this.http.get<Order[]>(this.baseUrl + "api/Orders/Get")
+    .subscribe(response => {
       this.orders = response;
     }, err => {
       console.log(err);

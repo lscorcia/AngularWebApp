@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'tokens',
@@ -12,13 +12,8 @@ export class TokensComponent {
   }
 
   ngOnInit() {
-    let token = localStorage.getItem("jwt");
-    this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens", {
-      headers: new HttpHeaders({
-        "Authorization": "Bearer " + token,
-        "Content-Type": "application/json"
-      })
-    }).subscribe(response => {
+    this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens")
+    .subscribe(response => {
       this.tokens = response;
     }, err => {
       console.log(err);
@@ -26,13 +21,7 @@ export class TokensComponent {
   }
 
   deleteRefreshTokens(index, tokenid) {
-    let token = localStorage.getItem("jwt");
-    this.http.delete(this.baseUrl + 'api/RefreshTokens/?id=' + tokenid,
-        {
-          headers: new HttpHeaders({
-            "Authorization": "Bearer " + token
-          })
-        })
+    this.http.delete(this.baseUrl + 'api/RefreshTokens/?id=' + tokenid)
     .subscribe(response => {
       this.tokens.splice(index, 1);
     }, err => {

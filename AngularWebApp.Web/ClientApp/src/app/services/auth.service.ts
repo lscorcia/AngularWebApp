@@ -42,7 +42,7 @@ export class AuthService {
   windowsLogin() {
     return new Observable((observer) => {
       let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web' });
-      return this.http.post(this.baseUrl + "api/auth/windowslogin", credentials, {
+      return this.http.post(this.baseUrl + "sso/auth/windowslogin", credentials, {
           headers: new HttpHeaders({
             "Content-Type": "application/json"
           })

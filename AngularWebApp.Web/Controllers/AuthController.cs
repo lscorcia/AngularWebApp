@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using AngularWebApp.Web.Entities;
 using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -58,25 +57,6 @@ namespace AngularWebApp.Web.Controllers
             {
                 return Unauthorized();
             }
-        }
-
-        [HttpPost, Route("windowslogin")]
-        [Authorize(AuthenticationSchemes = "Windows")]
-        public async Task<IActionResult> WindowsLogin([FromBody]WindowsLoginModel model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, User.Identity.Name),
-                new Claim(ClaimTypes.Email, User.Identity.Name),
-            };
-
-            var accessTokenString = GenerateAccessTokenString(claims);
-            var refreshTokenString = await NewRefreshToken(model.ClientId, User.Identity.Name, accessTokenString);
-
-            return Ok(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
         }
 
         // GET api/values
