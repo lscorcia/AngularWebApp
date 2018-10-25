@@ -78,6 +78,11 @@ export const routes: Routes = [
         path: 'orders',
         loadChildren: './views/orders/orders.module#OrdersModule',
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'tokens',
+        loadChildren: './views/tokens/tokens.module#TokensModule',
+        canActivate: [AuthGuard]
       }
     ]
   }
