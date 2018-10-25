@@ -4,8 +4,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AngularWebApp.Web.Entities;
+using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +19,11 @@ namespace AngularWebApp.Web.Controllers
     [Route("api/auth")]
     public class AuthController : Controller
     {
+        private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+
         // GET api/values
         [HttpPost, Route("login")]
-        public IActionResult Login([FromBody]LoginModel user)
+        public async Task<IActionResult> Login([FromBody]LoginModel user)
         {
             if (user == null)
             {
@@ -30,19 +35,14 @@ namespace AngularWebApp.Web.Controllers
 
             if (user.UserName == "johndoe" && user.Password == "def@123")
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
-                var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var claims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Name, User.Identity.Name),
+                    new Claim(ClaimTypes.Email, User.Identity.Name),
+                };
+                var tokenString = GenerateToken(claims);
 
-                var tokeOptions = new JwtSecurityToken(
-                    issuer: "AngularWebApp.Web",
-                    audience: "AngularWebApp.Web.Client",
-                    claims: new List<Claim>() { new Claim(ClaimTypes.Name, user.UserName) },
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: signingCredentials
-                );
-
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                return Ok(new { Token = tokenString });
+                return Ok(new { Token = tokenString, RefreshToken = await NewRefreshToken(User.Identity.Name, claims) });
             }
             else
             {
@@ -52,29 +52,19 @@ namespace AngularWebApp.Web.Controllers
 
         [HttpPost, Route("windowslogin")]
         [Authorize(AuthenticationSchemes = "Windows")]
-        public IActionResult WindowsLogin()
+        public async Task<IActionResult> WindowsLogin()
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
-            var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, User.Identity.Name),
+                new Claim(ClaimTypes.Email, User.Identity.Name),
+            };
+            var tokenString = GenerateToken(claims);
 
-            var tokeOptions = new JwtSecurityToken(
-                issuer: "AngularWebApp.Web",
-                audience: "AngularWebApp.Web.Client",
-                claims: new List<Claim>()
-                {
-                    new Claim(ClaimTypes.Name, User.Identity.Name),
-                    new Claim(ClaimTypes.Email, User.Identity.Name),
-                },
-                expires: DateTime.Now.AddMinutes(5),
-                signingCredentials: signingCredentials
-            );
-
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-
-            return Ok(new { UserName = User.Identity.Name, Token = tokenString });
+            return Ok(new { Token = tokenString, RefreshToken = await NewRefreshToken(User.Identity.Name, claims) });
         }
 
         // GET api/values
@@ -85,6 +75,92 @@ namespace AngularWebApp.Web.Controllers
                 return BadRequest(ModelState);
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Refresh(string token, string refreshToken)
+        {
+            using (AuthRepository rpAuth = new AuthRepository())
+            {
+                var principal = GetPrincipalFromExpiredToken(token);
+                var username = principal.Identity.Name;
+
+                var savedRefreshToken = await rpAuth.FindRefreshToken(username); ; //retrieve the refresh token from a data store
+                if (savedRefreshToken.ProtectedTicket != refreshToken)
+                    throw new SecurityTokenException("Invalid refresh token");
+
+                await rpAuth.RemoveRefreshToken(savedRefreshToken);
+
+                var newJwtToken = await NewRefreshToken(principal.Identity.Name, principal.Claims);
+
+                return new ObjectResult(new
+                {
+                    token = newJwtToken,
+                    refreshToken = newJwtToken
+                });
+            }
+        }
+
+        private async Task<string> NewRefreshToken(string username, IEnumerable<Claim> claims)
+        {
+            using (AuthRepository rpAuth = new AuthRepository())
+            {
+                var newJwtToken = GenerateToken(claims);
+                var newRefreshToken = GenerateRefreshToken();
+
+                var newNewRefreshToken = new RefreshToken();
+                newNewRefreshToken.ProtectedTicket = newRefreshToken;
+                newNewRefreshToken.IssuedUtc = DateTime.UtcNow;
+                newNewRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
+                newNewRefreshToken.Subject = username;
+                await rpAuth.AddRefreshToken(newNewRefreshToken);
+
+                return newJwtToken;
+            }
+        }
+
+        private string GenerateToken(IEnumerable<Claim> claims)
+        {
+            var jwt = new JwtSecurityToken(issuer: "AngularWebApp.Web",
+                audience: "AngularWebApp.Web.Client",
+                claims: claims, //the user's claims, for example new Claim[] { new Claim(ClaimTypes.Name, "The username"), //... 
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddMinutes(5),
+                signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false, //you might want to validate the audience and issuer depending on your use case
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("the server key used to sign the JWT token is here, use more than 16 chars")),
+                ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Invalid token");
+
+            return principal;
         }
     }
 }

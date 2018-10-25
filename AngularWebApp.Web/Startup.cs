@@ -1,4 +1,6 @@
+using System;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +16,8 @@ namespace AngularWebApp.Web
 {
     public class Startup
     {
+        private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,7 +41,19 @@ namespace AngularWebApp.Web
 
                         ValidIssuer = "AngularWebApp.Web",
                         ValidAudience = "AngularWebApp.Web.Client",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+                        IssuerSigningKey = _signingKey,
+                        ClockSkew = TimeSpan.Zero   //the default for this setting is 5 minutes
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                            {
+                                context.Response.Headers.Add("Token-Expired", "true");
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
