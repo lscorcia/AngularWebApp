@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,9 +33,6 @@ namespace AngularWebApp.Web
             services.AddDbContext<AuthContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AuthContext")));
 
-            //(new AuthContext(Configuration.GetConnectionString("AuthContext"))).Database.EnsureCreated();
-
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -91,6 +87,9 @@ namespace AngularWebApp.Web
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseAuthentication();
+
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/sso"),
+                builder => builder.UseMiddleware<WindowsAuthMiddleware>());
 
             app.UseMvc(routes =>
             {
