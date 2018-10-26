@@ -12,12 +12,17 @@ export class OrdersComponent {
   }
 
   ngOnInit() {
+    this.refreshData();
+  }
+
+  refreshData() {
+    this.orders = [];
     this.http.get<Order[]>(this.baseUrl + "api/Orders/Get")
-    .subscribe(response => {
-      this.orders = response;
-    }, err => {
-      console.log(err);
-    });
+      .subscribe(response => {
+        this.orders = response;
+      }, err => {
+        console.log(err);
+      });
   }
 }
 

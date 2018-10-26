@@ -1,10 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http'; 
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { JWT_OPTIONS, JwtInterceptor, JwtModule } from '@auth0/angular-jwt';
 import { AuthService } from './services/auth.service';
+import { RefreshTokenInterceptor } from './services/refresh-token-interceptor';
 import { AuthGuard } from './guards/auth-guard.service';
 import { Injector } from '@angular/core';
 import { parse } from 'url';
@@ -91,11 +92,25 @@ export function jwtOptionsFactory(injector: Injector) {
     LogoutComponent,
     RegisterComponent
   ],
-  providers: [ AuthService, AuthGuard,
-  {
-    provide: LocationStrategy,
-    useClass: HashLocationStrategy
-  }],
-  bootstrap: [ AppComponent ]
+  providers: [
+    AuthService,
+    AuthGuard,
+    JwtInterceptor,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useExisting: JwtInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RefreshTokenInterceptor,
+      multi: true
+    },
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
+  ],
+  bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

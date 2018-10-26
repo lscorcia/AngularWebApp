@@ -1,6 +1,7 @@
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
+<button type="button" class="btn btn-primary active mb-4" (click)="refreshData();">Refresh</button>
 
 <p *ngIf="!forecasts"><em>Loading...</em></p>
 

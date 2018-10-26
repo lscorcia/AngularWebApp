@@ -9,14 +9,18 @@ export class AuthInfo {
   public Email: string;
 }
 
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 @Injectable()
 export class AuthService {
   public AuthInfo: AuthInfo; 
 
-  constructor(private http: HttpClient, public jwtHelper: JwtHelperService, 
+  constructor(private http: HttpClient, private jwtHelper: JwtHelperService, 
     @Inject('BASE_URL') private baseUrl: string) {
-    const token = localStorage.getItem('jwt');
-    this.AuthInfo = this.buildAuthInfo(token);
+    this.AuthInfo = this.buildAuthInfo(this.getAccessToken());
   }
 
   login(username: string, password: string) {
@@ -26,9 +30,9 @@ export class AuthService {
         headers: new HttpHeaders({
           "Content-Type": "application/json"
         })
-      }).subscribe(response => {
-        var accessToken = (<any>response).accessToken;
-        var refreshToken = (<any>response).refreshToken;
+      }).subscribe((response: LoginResponse) => {
+        var accessToken = response.accessToken;
+        var refreshToken = response.refreshToken;
         this.setSession(accessToken, refreshToken);
 
         observer.next(accessToken);
@@ -41,16 +45,16 @@ export class AuthService {
 
   refresh() {
     return new Observable((observer) => {
-      const oldAccessToken = localStorage.getItem('jwt');
-      const oldRefreshToken = localStorage.getItem('refreshToken');
+      const oldAccessToken = this.getAccessToken();
+      const oldRefreshToken = this.getRefreshToken();
       let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client', 'accessToken': oldAccessToken, 'refreshToken': oldRefreshToken });
       return this.http.post(this.baseUrl + "api/auth/refresh", credentials, {
         headers: new HttpHeaders({
           "Content-Type": "application/json"
         })
-      }).subscribe(response => {
-        var accessToken = (<any>response).accessToken;
-        var refreshToken = (<any>response).refreshToken;
+      }).subscribe((response: LoginResponse) => {
+        var accessToken = response.accessToken;
+        var refreshToken = response.refreshToken;
         this.setSession(accessToken, refreshToken);
 
         observer.next(accessToken);
@@ -69,9 +73,9 @@ export class AuthService {
             "Content-Type": "application/json"
           })
         })
-        .subscribe(response => {
-          var accessToken = (<any>response).accessToken;
-          var refreshToken = (<any>response).refreshToken;
+        .subscribe((response: LoginResponse) => {
+          var accessToken = response.accessToken;
+          var refreshToken = response.refreshToken;
           this.setSession(accessToken, refreshToken);
 
           observer.next(accessToken);
@@ -94,7 +98,7 @@ export class AuthService {
   }
 
   public isLoggedIn() {
-    const token = localStorage.getItem('jwt');
+    const token = this.getAccessToken();
 
     // Check whether the token is expired
     return token && !this.jwtHelper.isTokenExpired(token);
@@ -105,6 +109,8 @@ export class AuthService {
 
     if (token) {
       var decodedContent = this.jwtHelper.decodeToken(token);
+      console.log(decodedContent);
+
       authInfo.UserName = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
       authInfo.Email = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email'];
     }
@@ -114,6 +120,16 @@ export class AuthService {
 
   isLoggedOut() {
     return !this.isLoggedIn();
+  }
+
+  getAccessToken() {
+    const token = localStorage.getItem('jwt');
+    return token;
+  }
+
+  getRefreshToken() {
+    const token = localStorage.getItem('refreshToken');
+    return token;
   }
 
   register(email: string, username: string, password: string, confirmPassword: string) {
@@ -130,7 +146,7 @@ export class AuthService {
           headers: new HttpHeaders({
             "Content-Type": "application/json"
           })
-        }).subscribe(response => {
+        }).subscribe(() => {
           observer.next({ savedSuccessfully: true });
           observer.complete();
         },
