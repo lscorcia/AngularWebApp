@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -26,6 +27,30 @@ namespace AngularWebApp.Web.Authentication
             }
 
             await next(context);
+        }
+    }
+
+    public class ReplaceHttp401StatusCodeMiddleware
+    {
+        private readonly RequestDelegate next;
+
+        public ReplaceHttp401StatusCodeMiddleware(RequestDelegate next)
+        {
+            this.next = next;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            await next(context);
+
+            if (context.Response.StatusCode == 401)
+            {
+                if (!context.Request.Path.StartsWithSegments("/sso/"))
+                {
+                    context.Response.StatusCode = 418;
+                    context.Response.Headers["X-Original-HTTP-Status-Code"] = "401";
+                }
+            }
         }
     }
 }

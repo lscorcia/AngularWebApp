@@ -86,10 +86,13 @@ namespace AngularWebApp.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            app.UseAuthentication();
 
-            app.UseWhen(context => context.Request.Path.StartsWithSegments("/sso"),
+            app.UseWhen(
+                context => context.Request.Path.StartsWithSegments("/sso/"),
                 builder => builder.UseMiddleware<WindowsAuthMiddleware>());
+            app.UseMiddleware<ReplaceHttp401StatusCodeMiddleware>();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
