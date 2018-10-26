@@ -9,6 +9,8 @@ import { RefreshTokenInterceptor } from './services/refresh-token-interceptor';
 import { AuthGuard } from './guards/auth-guard.service';
 import { Injector } from '@angular/core';
 import { parse } from 'url';
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { NgProgressHttpModule } from '@ngx-progressbar/http';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -78,6 +80,8 @@ export function jwtOptionsFactory(injector: Injector) {
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
+    NgProgressModule.forRoot({ spinner: false }),
+    NgProgressHttpModule.forRoot(),
     JwtModule.forRoot({ jwtOptionsProvider: { provide: JWT_OPTIONS, useFactory: jwtOptionsFactory, deps: [Injector] } }),
     HttpClientModule,
     FormsModule
