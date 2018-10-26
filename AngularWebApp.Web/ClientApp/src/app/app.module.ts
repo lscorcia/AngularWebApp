@@ -26,6 +26,7 @@ import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
 import { LogoutComponent } from './views/logout/logout.component';
+import { RefreshTokenComponent } from './views/refreshToken/refreshToken.component';
 import { RegisterComponent } from './views/register/register.component';
 
 const APP_CONTAINERS = [
@@ -86,6 +87,7 @@ export function jwtOptionsFactory(injector: Injector) {
     P404Component,
     P500Component,
     LoginComponent,
+    RefreshTokenComponent,
     LogoutComponent,
     RegisterComponent
   ],

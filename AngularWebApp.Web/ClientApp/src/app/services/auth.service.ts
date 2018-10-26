@@ -21,8 +21,30 @@ export class AuthService {
 
   login(username: string, password: string) {
     return new Observable((observer) => {
-      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web', 'username': username, 'password': password });
+      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client', 'username': username, 'password': password });
       return this.http.post(this.baseUrl + "api/auth/login", credentials, {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json"
+        })
+      }).subscribe(response => {
+        var accessToken = (<any>response).accessToken;
+        var refreshToken = (<any>response).refreshToken;
+        this.setSession(accessToken, refreshToken);
+
+        observer.next(accessToken);
+        observer.complete();
+      }, err => {
+        observer.error(err);
+      });
+    });
+  }
+
+  refresh() {
+    return new Observable((observer) => {
+      const oldAccessToken = localStorage.getItem('jwt');
+      const oldRefreshToken = localStorage.getItem('refreshToken');
+      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client', 'accessToken': oldAccessToken, 'refreshToken': oldRefreshToken });
+      return this.http.post(this.baseUrl + "api/auth/refresh", credentials, {
         headers: new HttpHeaders({
           "Content-Type": "application/json"
         })
@@ -41,7 +63,7 @@ export class AuthService {
 
   windowsLogin() {
     return new Observable((observer) => {
-      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web' });
+      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client' });
       return this.http.post(this.baseUrl + "sso/auth/windowslogin", credentials, {
           headers: new HttpHeaders({
             "Content-Type": "application/json"
