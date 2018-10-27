@@ -9,7 +9,8 @@ namespace AngularWebApp.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [Authorize]
-    public class OrdersController : Controller
+    [ApiController]
+    public class OrdersController : ControllerBase
     {
         [HttpGet]
         [Authorize]

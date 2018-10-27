@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace AngularWebApp.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
-    public class WeatherForecastsController : Controller
+    [ApiController]
+    public class WeatherForecastsController : ControllerBase
     {
         private static string[] Summaries = new[]
         {

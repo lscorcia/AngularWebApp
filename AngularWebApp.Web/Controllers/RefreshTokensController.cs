@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 namespace AngularWebApp.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
-    public class RefreshTokensController : Controller
+    [ApiController]
+    [Authorize]
+    public class RefreshTokensController : ControllerBase
     {
         private readonly IConfiguration configuration;
 
@@ -16,7 +18,6 @@ namespace AngularWebApp.Web.Controllers
             configuration = config;
         }
 
-        [Authorize]
         [HttpGet]
         public IActionResult List()
         {
@@ -26,7 +27,6 @@ namespace AngularWebApp.Web.Controllers
             }
         }
 
-        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {

@@ -16,8 +16,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AngularWebApp.Web.Controllers
 {
-    [Route("api/auth")]
-    public class AuthController : Controller
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AuthController : ControllerBase
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
@@ -28,18 +29,9 @@ namespace AngularWebApp.Web.Controllers
             configuration = config;
         }
 
-        // GET api/values
-        [HttpPost, Route("login")]
-        public async Task<IActionResult> Login([FromBody]LoginModel user)
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginModel user)
         {
-            if (user == null)
-            {
-                return BadRequest("Invalid client request");
-            }
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             if (user.UserName == "johndoe" && user.Password == "def@123")
             {
                 var claims = new List<Claim>()
@@ -59,22 +51,15 @@ namespace AngularWebApp.Web.Controllers
             }
         }
 
-        // GET api/values
-        [HttpPost, Route("register")]
-        public IActionResult Register([FromBody]RegisterModel user)
+        [HttpPost]
+        public IActionResult Register(RegisterModel user)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             return Ok();
         }
 
-        [HttpPost, Route("refresh")]
-        public async Task<IActionResult> Refresh([FromBody]RefreshTokenModel model)
+        [HttpPost]
+        public async Task<IActionResult> Refresh(RefreshTokenModel model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var principal = GetPrincipalFromExpiredToken(model.AccessToken);
 
             using (AuthRepository rpAuth = new AuthRepository(configuration))

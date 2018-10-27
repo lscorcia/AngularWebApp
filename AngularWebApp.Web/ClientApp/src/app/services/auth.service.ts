@@ -25,12 +25,9 @@ export class AuthService {
 
   login(username: string, password: string) {
     return new Observable((observer) => {
-      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client', 'username': username, 'password': password });
-      return this.http.post(this.baseUrl + "api/auth/login", credentials, {
-        headers: new HttpHeaders({
-          "Content-Type": "application/json"
-        })
-      }).subscribe((response: LoginResponse) => {
+      let credentials = { clientId: 'AngularWebApp.Web.Client', username: username, password: password };
+      return this.http.post(this.baseUrl + "api/auth/login", credentials)
+        .subscribe((response: LoginResponse) => {
         var accessToken = response.accessToken;
         var refreshToken = response.refreshToken;
         this.setSession(accessToken, refreshToken);
@@ -47,12 +44,9 @@ export class AuthService {
     return new Observable((observer) => {
       const oldAccessToken = this.getAccessToken();
       const oldRefreshToken = this.getRefreshToken();
-      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client', 'accessToken': oldAccessToken, 'refreshToken': oldRefreshToken });
-      return this.http.post(this.baseUrl + "api/auth/refresh", credentials, {
-        headers: new HttpHeaders({
-          "Content-Type": "application/json"
-        })
-      }).subscribe((response: LoginResponse) => {
+      let credentials = { clientId: 'AngularWebApp.Web.Client', accessToken: oldAccessToken, refreshToken: oldRefreshToken };
+      return this.http.post(this.baseUrl + "api/auth/refresh", credentials)
+        .subscribe((response: LoginResponse) => {
         var accessToken = response.accessToken;
         var refreshToken = response.refreshToken;
         this.setSession(accessToken, refreshToken);
@@ -67,12 +61,8 @@ export class AuthService {
 
   windowsLogin() {
     return new Observable((observer) => {
-      let credentials = JSON.stringify({ 'clientId': 'AngularWebApp.Web.Client' });
-      return this.http.post(this.baseUrl + "sso/auth/windowslogin", credentials, {
-          headers: new HttpHeaders({
-            "Content-Type": "application/json"
-          })
-        })
+      let credentials = { clientId: 'AngularWebApp.Web.Client' };
+      return this.http.post(this.baseUrl + "sso/windowsauth/login", credentials)
         .subscribe((response: LoginResponse) => {
           var accessToken = response.accessToken;
           var refreshToken = response.refreshToken;

@@ -17,8 +17,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AngularWebApp.Web.Controllers
 {
-    [Route("sso/auth")]
-    public class WindowsAuthController : Controller
+    [Route("sso/[controller]/[action]")]
+    [ApiController]
+    public class WindowsAuthController : ControllerBase
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
@@ -29,13 +30,10 @@ namespace AngularWebApp.Web.Controllers
             configuration = config;
         }
 
-        [HttpPost, Route("windowslogin")]
+        [HttpPost]
         [Authorize(AuthenticationSchemes = "Windows")]
-        public async Task<IActionResult> WindowsLogin([FromBody]WindowsLoginModel model)
+        public async Task<IActionResult> Login(WindowsLoginModel model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, User.Identity.Name),
