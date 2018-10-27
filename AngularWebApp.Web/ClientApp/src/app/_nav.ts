@@ -10,7 +10,7 @@ export const navItems = [
   },
   {
     name: 'Weather',
-    url: '/fetch-data',
+    url: '/weather',
     icon: 'icon-drop'
   },
   {

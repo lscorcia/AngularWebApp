@@ -12,20 +12,25 @@ export class TokensComponent {
   }
 
   ngOnInit() {
-    this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens")
-    .subscribe(response => {
-      this.tokens = response;
-    }, err => {
-      console.log(err);
-    });
+    this.refresh();
+  }
+
+  refresh() {
+    this.tokens = [];
+    this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens/List")
+      .subscribe(response => {
+        this.tokens = response;
+      }, err => {
+        console.log(err);
+      });
   }
 
   deleteRefreshTokens(index, tokenid) {
-    this.http.delete(this.baseUrl + 'api/RefreshTokens/?id=' + tokenid)
-    .subscribe(response => {
-      this.tokens.splice(index, 1);
-    }, err => {
-      console.log(err);
+    this.http.delete(this.baseUrl + 'api/RefreshTokens/Delete/?id=' + encodeURIComponent(tokenid))
+      .subscribe(() => {
+        this.tokens.splice(index, 1);
+      }, err => {
+        console.log(err);
       });
   }
 }

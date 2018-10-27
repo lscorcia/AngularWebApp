@@ -74,7 +74,7 @@ namespace AngularWebApp.Web.Controllers
                 audience: "AngularWebApp.Web.Client",
                 claims: claims, //the user's claims, for example new Claim[] { new Claim(ClaimTypes.Name, "The username"), //... 
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(5),
+                expires: DateTime.UtcNow.AddMinutes(1),
                 signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256)
             );
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace AngularWebApp.Web.Controllers
 {
-    [Route("api/RefreshTokens")]
+    [Route("api/[controller]/[action]")]
     public class RefreshTokensController : Controller
     {
         private readonly IConfiguration configuration;
@@ -18,7 +18,7 @@ namespace AngularWebApp.Web.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult List()
         {
             using (AuthRepository rpAuth = new AuthRepository(configuration))
             {

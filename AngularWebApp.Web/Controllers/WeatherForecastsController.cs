@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AngularWebApp.Web.Controllers
 {
-    [Route("api/[controller]")]
-    public class SampleDataController : Controller
+    [Route("api/[controller]/[action]")]
+    public class WeatherForecastsController : Controller
     {
         private static string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        [HttpGet]
+        public IEnumerable<WeatherForecast> List()
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

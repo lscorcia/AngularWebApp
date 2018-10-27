@@ -78,8 +78,8 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
       },
       {
-        path: 'fetch-data',
-        loadChildren: './views/fetch-data/fetch-data.module#FetchDataModule',
+        path: 'weather',
+        loadChildren: './views/weather/weather.module#WeatherModule',
         canActivate: [AuthGuard]
       },
       {

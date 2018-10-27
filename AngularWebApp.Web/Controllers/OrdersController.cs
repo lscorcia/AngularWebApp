@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AngularWebApp.Web.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [Authorize]
     public class OrdersController : Controller
     {
-        [HttpGet("[action]")]
+        [HttpGet]
         [Authorize]
-        public IEnumerable<Order> Get()
+        public IEnumerable<Order> List()
         {
             return Order.CreateOrders();
         }

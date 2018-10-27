@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { Routes,
      RouterModule } from '@angular/router';
 
-import { FetchDataComponent } from './fetch-data.component';
+import { WeatherComponent } from './weather.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: FetchDataComponent,
+    component: WeatherComponent,
     data: {
-      title: 'Fetch Data'
+      title: 'Weather Forecasts'
     }
   }
 ];
@@ -18,4 +18,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class FetchDataRoutingModule {}
+export class WeatherRoutingModule {}

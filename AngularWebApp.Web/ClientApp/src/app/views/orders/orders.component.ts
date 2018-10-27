@@ -17,7 +17,7 @@ export class OrdersComponent {
 
   refreshData() {
     this.orders = [];
-    this.http.get<Order[]>(this.baseUrl + "api/Orders/Get")
+    this.http.get<Order[]>(this.baseUrl + "api/Orders/List")
       .subscribe(response => {
         this.orders = response;
       }, err => {

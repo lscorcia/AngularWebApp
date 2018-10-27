@@ -2,10 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'fetch-data',
-  templateUrl: './fetch-data.component.html'
+  selector: 'weather',
+  templateUrl: './weather.component.html'
 })
-export class FetchDataComponent {
+export class WeatherComponent {
   public forecasts: WeatherForecast[];
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
@@ -17,7 +17,7 @@ export class FetchDataComponent {
 
   refreshData() {
     this.forecasts = [];
-    this.http.get<WeatherForecast[]>(this.baseUrl + 'api/SampleData/WeatherForecasts').subscribe(result => {
+    this.http.get<WeatherForecast[]>(this.baseUrl + 'api/WeatherForecasts/List').subscribe(result => {
       this.forecasts = result;
     }, error => console.error(error));
   }
