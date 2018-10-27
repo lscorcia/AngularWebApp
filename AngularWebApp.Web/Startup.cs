@@ -88,7 +88,7 @@ namespace AngularWebApp.Web
             app.UseSpaStaticFiles();
 
             app.UseWhen(
-                context => context.Request.Path.StartsWithSegments("/sso/"),
+                context => context.Request.Path.StartsWithSegments("/sso"),
                 builder => builder.UseMiddleware<WindowsAuthMiddleware>());
             app.UseMiddleware<ReplaceHttp401StatusCodeMiddleware>();
 

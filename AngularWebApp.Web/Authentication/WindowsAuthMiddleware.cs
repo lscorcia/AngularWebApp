@@ -45,7 +45,7 @@ namespace AngularWebApp.Web.Authentication
 
             if (context.Response.StatusCode == 401)
             {
-                if (!context.Request.Path.StartsWithSegments("/sso/"))
+                if (!context.Request.Path.StartsWithSegments("/sso"))
                 {
                     context.Response.StatusCode = 418;
                     context.Response.Headers["X-Original-HTTP-Status-Code"] = "401";
