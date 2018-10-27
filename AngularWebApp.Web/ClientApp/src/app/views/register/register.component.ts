@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from "@angular/router";
-import { AuthService } from '../../services/auth.service';
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +11,7 @@ export class RegisterComponent {
   registerMessage: string;
   savedSuccessfully: boolean;
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
@@ -19,7 +19,7 @@ export class RegisterComponent {
   }
 
   register(form: NgForm) {
-    this.authService.register(form.value.email, form.value.username, form.value.password, form.value.confirmpassword)
+    this.authenticationService.register(form.value.email, form.value.username, form.value.password, form.value.confirmpassword)
       .subscribe((response) => {
         this.savedSuccessfully = (<any>response).savedSuccessfully;
         this.registerMessage = "User has been registered successfully, you will be redirected to login page in 2 seconds.";

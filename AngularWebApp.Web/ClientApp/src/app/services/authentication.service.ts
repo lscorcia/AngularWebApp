@@ -15,7 +15,7 @@ interface LoginResponse {
 }
 
 @Injectable()
-export class AuthService {
+export class AuthenticationService {
   public AuthInfo: AuthInfo; 
 
   constructor(private http: HttpClient, private jwtHelper: JwtHelperService, 

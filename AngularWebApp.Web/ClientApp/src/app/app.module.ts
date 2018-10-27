@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { JWT_OPTIONS, JwtInterceptor, JwtModule } from '@auth0/angular-jwt';
-import { AuthService } from './services/auth.service';
+import { AuthenticationService } from './services/authentication.service';
 import { RefreshTokenInterceptor } from './services/refresh-token-interceptor';
 import { AuthGuard } from './guards/auth-guard.service';
 import { Injector } from '@angular/core';
@@ -97,7 +97,7 @@ export function jwtOptionsFactory(injector: Injector) {
     RegisterComponent
   ],
   providers: [
-    AuthService,
+    AuthenticationService,
     AuthGuard,
     JwtInterceptor,
     {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from "@angular/router";
-import { AuthService } from '../../services/auth.service';
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +11,7 @@ export class LoginComponent {
   loginMessage: string;
 
   constructor(private router: Router,
-    private authService: AuthService) {
+    private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
@@ -19,7 +19,7 @@ export class LoginComponent {
   }
 
   login(form: NgForm) {
-    this.authService.login(form.value.username, form.value.password)
+    this.authenticationService.login(form.value.username, form.value.password)
       .subscribe(response => {
         this.loginMessage = null;
         this.router.navigate(["/"]);
@@ -29,7 +29,7 @@ export class LoginComponent {
   }
 
   windowsLogin() {
-    this.authService.windowsLogin()
+    this.authenticationService.windowsLogin()
       .subscribe(response => {
         this.loginMessage = null;
         this.router.navigate(["/"]);

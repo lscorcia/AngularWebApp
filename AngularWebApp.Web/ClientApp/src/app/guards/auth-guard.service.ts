@@ -1,20 +1,20 @@
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthenticationService } from '../services/authentication.service';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router, private jwtHelper: JwtHelperService, private authService: AuthService) {
+  constructor(private router: Router, private jwtHelper: JwtHelperService, private authenticationService: AuthenticationService) {
   }
   canActivate(): Observable<boolean> | boolean {
-    var token = this.authService.getAccessToken();
+    var token = this.authenticationService.getAccessToken();
     if (token) {
       if (this.jwtHelper.isTokenExpired(token)) {
         return new Observable<boolean>((observer) => {
-          this.authService.refresh().subscribe(() => {
-            token = this.authService.getAccessToken();
+          this.authenticationService.refresh().subscribe(() => {
+            token = this.authenticationService.getAccessToken();
             if (this.jwtHelper.isTokenExpired(token)) {
               this.router.navigate(["login"]);
               observer.next(false);
