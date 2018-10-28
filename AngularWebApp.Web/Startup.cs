@@ -30,8 +30,8 @@ namespace AngularWebApp.Web
         public void ConfigureServices(IServiceCollection services)
         {
             // Set up data directory
-            services.AddDbContext<AuthContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AuthContext")));
+            services.AddDbContext<AuthDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("AuthDbContext")));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

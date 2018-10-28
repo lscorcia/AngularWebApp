@@ -11,7 +11,6 @@ using AngularWebApp.Web.Entities;
 using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AngularWebApp.Web.Controllers
@@ -22,11 +21,11 @@ namespace AngularWebApp.Web.Controllers
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
-        private readonly IConfiguration configuration;
+        private readonly AuthDbContext _ctx;
 
-        public AuthController(IConfiguration config)
+        public AuthController(AuthDbContext ctx)
         {
-            configuration = config;
+            _ctx = ctx;
         }
 
         [HttpPost]
@@ -62,7 +61,7 @@ namespace AngularWebApp.Web.Controllers
         {
             var principal = GetPrincipalFromExpiredToken(model.AccessToken);
 
-            using (AuthRepository rpAuth = new AuthRepository(configuration))
+            using (AuthRepository rpAuth = new AuthRepository(_ctx))
             {
                 var savedRefreshToken = await rpAuth.FindRefreshToken(model.RefreshToken); // retrieve the refresh token from a data store
                 if (savedRefreshToken == null || 
@@ -91,7 +90,7 @@ namespace AngularWebApp.Web.Controllers
             newRefreshToken.ProtectedTicket = accessToken;
             newRefreshToken.IssuedUtc = DateTime.UtcNow;
             newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
-            using (AuthRepository rpAuth = new AuthRepository(configuration))
+            using (AuthRepository rpAuth = new AuthRepository(_ctx))
             {
                 await rpAuth.AddRefreshToken(newRefreshToken);
             }

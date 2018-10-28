@@ -2,7 +2,6 @@
 using AngularWebApp.Web.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace AngularWebApp.Web.Controllers
 {
@@ -11,17 +10,17 @@ namespace AngularWebApp.Web.Controllers
     [Authorize]
     public class RefreshTokensController : ControllerBase
     {
-        private readonly IConfiguration configuration;
+        private readonly AuthDbContext _ctx;
 
-        public RefreshTokensController(IConfiguration config)
+        public RefreshTokensController(AuthDbContext ctx)
         {
-            configuration = config;
+            _ctx = ctx;
         }
 
         [HttpGet]
         public IActionResult List()
         {
-            using (AuthRepository rpAuth = new AuthRepository(configuration))
+            using (AuthRepository rpAuth = new AuthRepository(_ctx))
             {
                 return Ok(rpAuth.GetAllRefreshTokens());
             }
@@ -30,7 +29,7 @@ namespace AngularWebApp.Web.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {
-            using (AuthRepository rpAuth = new AuthRepository(configuration))
+            using (AuthRepository rpAuth = new AuthRepository(_ctx))
             {
                 var result = await rpAuth.RemoveRefreshToken(id);
                 if (!result)

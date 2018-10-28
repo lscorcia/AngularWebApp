@@ -23,11 +23,11 @@ namespace AngularWebApp.Web.Controllers
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
-        private readonly IConfiguration configuration;
+        private readonly AuthDbContext _ctx;
 
-        public WindowsAuthController(IConfiguration config)
+        public WindowsAuthController(AuthDbContext ctx)
         {
-            configuration = config;
+            _ctx = ctx;
         }
 
         [HttpPost]
@@ -58,7 +58,7 @@ namespace AngularWebApp.Web.Controllers
             newRefreshToken.ProtectedTicket = accessToken;
             newRefreshToken.IssuedUtc = DateTime.UtcNow;
             newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
-            using (AuthRepository rpAuth = new AuthRepository(configuration))
+            using (AuthRepository rpAuth = new AuthRepository(_ctx))
             {
                 await rpAuth.AddRefreshToken(newRefreshToken);
             }

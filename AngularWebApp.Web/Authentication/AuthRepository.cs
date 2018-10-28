@@ -5,25 +5,20 @@ using System.Threading.Tasks;
 using System.Web;
 using AngularWebApp.Web.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace AngularWebApp.Web.Authentication
 {
     public class AuthRepository : IDisposable
     {
-        private AuthContext _ctx;
+        private readonly AuthDbContext _ctx;
 
-        private readonly IConfiguration configuration;
-
-        public AuthRepository(IConfiguration config)
+        public AuthRepository(AuthDbContext ctx)
         {
-            configuration = config;
-            _ctx = new AuthContext(configuration.GetConnectionString("AuthContext"));
+            _ctx = ctx;
         }
 
         public void Dispose()
         {
-            _ctx.Dispose();
         }
 
         public async Task<bool> AddRefreshToken(RefreshToken token)
