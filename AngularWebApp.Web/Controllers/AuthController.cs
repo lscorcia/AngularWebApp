@@ -25,25 +25,30 @@ namespace AngularWebApp.Web.Controllers
         private readonly AuthDbContext _ctx;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public AuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager/*, SignInManager<IdentityUser> signInManager*/)
+        public AuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager)
         {
             _ctx = ctx;
             _userManager = userManager;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginModel user)
+        public async Task<IActionResult> Login(LoginModel model)
         {
-            if (user.UserName == "johndoe" && user.Password == "def@123")
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user == null)
+                return BadRequest("User not found");
+
+            bool isValidLogin = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (isValidLogin)
             {
                 var claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Email, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email),
                 };
 
                 var accessTokenString = GenerateAccessTokenString(claims);
-                var refreshTokenString = await NewRefreshToken(user.ClientId, user.UserName, accessTokenString);
+                var refreshTokenString = await NewRefreshToken(model.ClientId, user.UserName, accessTokenString);
 
                 return Ok(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
             }
@@ -65,7 +70,6 @@ namespace AngularWebApp.Web.Controllers
                 //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                 //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                //await _signInManager.SignInAsync(user, isPersistent: false);
                 return Ok();
             }
 
