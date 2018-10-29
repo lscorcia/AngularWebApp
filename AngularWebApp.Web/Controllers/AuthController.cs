@@ -12,6 +12,7 @@ using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AngularWebApp.Web.Controllers
@@ -24,16 +25,20 @@ namespace AngularWebApp.Web.Controllers
 
         private readonly AuthDbContext _ctx;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<AuthController> _log;
 
-        public AuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager)
+        public AuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager, ILogger<AuthController> log)
         {
             _ctx = ctx;
             _userManager = userManager;
+            _log = log;
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            _log.LogDebug("Login attempt by user {0}", model.UserName);
+
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
                 return BadRequest("User not found");
