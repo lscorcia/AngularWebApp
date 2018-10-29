@@ -14,7 +14,7 @@ namespace AngularWebApp.Web.Authentication
         public AuthDbContext(DbContextOptions<AuthDbContext> options)
             : base(options)
         {
-            
+            Database.Migrate();
         }
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
