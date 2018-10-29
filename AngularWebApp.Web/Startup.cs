@@ -1,12 +1,13 @@
-    using System;
-    using System.IO;
-    using System.Text;
+using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Web.Authentication;
-    using AngularWebApp.Web.Configuration;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AngularWebApp.Web.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -118,8 +119,10 @@ namespace AngularWebApp.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            // Initialize logging system
             loggerFactory.AddLog4Net();
-
+            
+            //
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -127,6 +130,15 @@ namespace AngularWebApp.Web
             else
             {
                 app.UseExceptionHandler("/Error");
+
+                // Allow SSL Offloading by load balancers
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                    ForwardLimit = null,
+                    RequireHeaderSymmetry = false
+                });
+
                 app.UseHsts();
             }
 
@@ -134,6 +146,7 @@ namespace AngularWebApp.Web
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            // Enable the SSO login using Windows Authentication
             app.UseWhen(
                 context => context.Request.Path.StartsWithSegments("/sso"),
                 builder => builder.UseMiddleware<WindowsAuthMiddleware>());
