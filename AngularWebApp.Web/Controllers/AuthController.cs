@@ -37,7 +37,7 @@ namespace AngularWebApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            _log.LogDebug("Login attempt by user {0}", model.UserName);
+            _log.LogDebug("Login attempt by user {0}...", model.UserName);
 
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
@@ -66,6 +66,8 @@ namespace AngularWebApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
+            _log.LogDebug("Registration attempt by user {0}...", model.UserName);
+
             var user = new IdentityUser { UserName = model.UserName, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
@@ -90,6 +92,10 @@ namespace AngularWebApp.Web.Controllers
         public async Task<IActionResult> Refresh(RefreshTokenModel model)
         {
             var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            if (principal == null)
+                return BadRequest("Principal for token not found");
+
+            _log.LogDebug("Refreshing token for user {0}...", principal.Identity.Name);
 
             using (AuthRepository rpAuth = new AuthRepository(_ctx))
             {

@@ -13,6 +13,7 @@ using AngularWebApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AngularWebApp.Web.Controllers
@@ -23,17 +24,21 @@ namespace AngularWebApp.Web.Controllers
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
+        private readonly ILogger<WindowsAuthController> _log;
         private readonly AuthDbContext _ctx;
 
-        public WindowsAuthController(AuthDbContext ctx)
+        public WindowsAuthController(AuthDbContext ctx, ILogger<WindowsAuthController> log)
         {
             _ctx = ctx;
+            _log = log;
         }
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Windows")]
         public async Task<IActionResult> Login(WindowsLoginModel model)
         {
+            _log.LogInformation("Windows login for user {0}...", User.Identity.Name);
+
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, User.Identity.Name),

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AngularWebApp.Web.Controllers
 {
@@ -12,10 +13,19 @@ namespace AngularWebApp.Web.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
+        private readonly ILogger<OrdersController> _log;
+
+        public OrdersController(ILogger<OrdersController> log)
+        {
+            _log = log;
+        }
+
         [HttpGet]
         [Authorize]
         public IEnumerable<Order> List()
         {
+            _log.LogInformation("Retrieving orders...");
+
             return Order.CreateOrders();
         }
     }

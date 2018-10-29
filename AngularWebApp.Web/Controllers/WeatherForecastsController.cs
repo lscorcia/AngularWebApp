@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AngularWebApp.Web.Controllers
 {
@@ -10,7 +11,14 @@ namespace AngularWebApp.Web.Controllers
     [ApiController]
     public class WeatherForecastsController : ControllerBase
     {
-        private static string[] Summaries = new[]
+        private readonly ILogger<WeatherForecastsController> _log;
+
+        public WeatherForecastsController(ILogger<WeatherForecastsController> log)
+        {
+            _log = log;
+        }
+
+        private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
@@ -18,6 +26,8 @@ namespace AngularWebApp.Web.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> List()
         {
+            _log.LogInformation("Retrieving weather forecasts...");
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
