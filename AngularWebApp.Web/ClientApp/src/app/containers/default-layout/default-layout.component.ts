@@ -11,8 +11,8 @@ export class DefaultLayoutComponent {
   public sidebarMinimized = true;
   private changes: MutationObserver;
   public element: HTMLElement = document.body;
-  constructor(private authenticationService: AuthenticationService) {
 
+  constructor(public authenticationService: AuthenticationService) {
     this.changes = new MutationObserver((mutations) => {
       this.sidebarMinimized = document.body.classList.contains('sidebar-minimized');
     });
