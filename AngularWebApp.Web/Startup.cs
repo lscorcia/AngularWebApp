@@ -1,8 +1,10 @@
-using System;
-using System.Text;
+    using System;
+    using System.IO;
+    using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Web.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using AngularWebApp.Web.Configuration;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +33,25 @@ namespace AngularWebApp.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Configuration
+            var configSourceConfig = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var configArea = configSourceConfig.GetValue<string>("Configuration:Area");
+            var configDbConnString = configSourceConfig.GetConnectionString("ConfigDbContext");
+
+            services.Add(new ServiceDescriptor(typeof(IConfiguration),
+                provider => new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddEntityFrameworkConfig(configArea, options =>
+                        options.UseSqlServer(configDbConnString)
+                    )
+                    .AddJsonFile("appsettings.json", false)
+                    .Build(),
+                ServiceLifetime.Singleton));
+
             // Set up data directory
             services.AddDbContext<AuthDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AuthDbContext")));

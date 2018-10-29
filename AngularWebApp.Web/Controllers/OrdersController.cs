@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AngularWebApp.Web.Controllers
@@ -13,10 +14,12 @@ namespace AngularWebApp.Web.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
+        private readonly IConfiguration _config;
         private readonly ILogger<OrdersController> _log;
 
-        public OrdersController(ILogger<OrdersController> log)
+        public OrdersController(ILogger<OrdersController> log, IConfiguration config)
         {
+            _config = config;
             _log = log;
         }
 
@@ -24,6 +27,8 @@ namespace AngularWebApp.Web.Controllers
         [Authorize]
         public IEnumerable<Order> List()
         {
+            _log.LogWarning("Config key {0} = {1}", "ConfigKey1", _config.GetValue<string>("ConfigKey1"));
+            _log.LogWarning("Config key {0} = {1}", "ConfigKey2", _config.GetValue<string>("ConfigKey2"));
             _log.LogInformation("Retrieving orders...");
 
             return Order.CreateOrders();
