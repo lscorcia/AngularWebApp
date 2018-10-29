@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AngularWebApp.Web.Entities;
 using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,10 +23,12 @@ namespace AngularWebApp.Web.Controllers
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
         private readonly AuthDbContext _ctx;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AuthController(AuthDbContext ctx)
+        public AuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager/*, SignInManager<IdentityUser> signInManager*/)
         {
             _ctx = ctx;
+            _userManager = userManager;
         }
 
         [HttpPost]
@@ -51,9 +54,27 @@ namespace AngularWebApp.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterModel user)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
-            return Ok();
+            var user = new IdentityUser { UserName = model.UserName, Email = model.Email };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                //await _signInManager.SignInAsync(user, isPersistent: false);
+                return Ok();
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return BadRequest(ModelState);
         }
 
         [HttpPost]

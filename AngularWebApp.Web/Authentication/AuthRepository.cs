@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using AngularWebApp.Web.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace AngularWebApp.Web.Authentication
 {
@@ -26,9 +25,7 @@ namespace AngularWebApp.Web.Authentication
             var existingToken = _ctx.RefreshTokens.SingleOrDefault(r => r.Subject == token.Subject && r.ClientId == token.ClientId);
 
             if (existingToken != null)
-            {
-                var result = await RemoveRefreshToken(existingToken);
-            }
+                await RemoveRefreshToken(existingToken);
 
             _ctx.RefreshTokens.Add(token);
 
