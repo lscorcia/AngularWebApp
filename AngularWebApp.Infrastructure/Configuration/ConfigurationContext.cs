@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AngularWebApp.Web.Configuration
+namespace AngularWebApp.Infrastructure.Configuration
 {
     public class ConfigurationContext : DbContext
     {

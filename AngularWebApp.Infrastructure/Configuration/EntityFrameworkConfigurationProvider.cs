@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace AngularWebApp.Web.Configuration
+namespace AngularWebApp.Infrastructure.Configuration
 {
     public class EntityFrameworkConfigurationProvider : ConfigurationProvider
     {

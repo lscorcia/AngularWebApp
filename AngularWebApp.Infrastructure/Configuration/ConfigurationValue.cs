@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AngularWebApp.Web.Configuration
+namespace AngularWebApp.Infrastructure.Configuration
 {
     public class ConfigurationValue
     {

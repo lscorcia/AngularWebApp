@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace AngularWebApp.Web.Configuration
+namespace AngularWebApp.Infrastructure.Configuration
 {
     public static class EntityFrameworkExtensions
     {
