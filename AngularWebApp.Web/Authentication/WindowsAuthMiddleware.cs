@@ -45,6 +45,8 @@ namespace AngularWebApp.Web.Authentication
 
             if (context.Response.StatusCode == 401)
             {
+                // Replace all 401 responses, except the ones under the /sso paths
+                // which will let IIS trigger the Windows Authentication mechanisms
                 if (!context.Request.Path.StartsWithSegments("/sso"))
                 {
                     context.Response.StatusCode = 418;
