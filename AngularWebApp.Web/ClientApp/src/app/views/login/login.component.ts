@@ -24,7 +24,18 @@ export class LoginComponent {
         this.loginMessage = null;
         this.router.navigate(["/"]);
       }, err => {
-        this.loginMessage = "Credenziali errate";
+        if (err.status === 418)
+          this.loginMessage = "Login failed: Invalid credentials";
+        else {
+          var errors = [];
+          for (var fieldName in err.error) {
+            if (err.error.hasOwnProperty(fieldName)) {
+              errors.push(err.error[fieldName]);
+            }
+          }
+
+          this.loginMessage = "Login failed: " + (errors.join(", ") || err.message);
+        }
       });
   }
 
@@ -34,7 +45,14 @@ export class LoginComponent {
         this.loginMessage = null;
         this.router.navigate(["/"]);
       }, err => {
-        this.loginMessage = "Login fallito";
+        var errors = [];
+        for (var fieldName in err.error) {
+          if (err.error.hasOwnProperty(fieldName)) {
+            errors.push(err.error[fieldName]);
+          }
+        }
+
+        this.loginMessage = "Login failed: " + (errors.join(", ") || err.message);
       });
   }
 

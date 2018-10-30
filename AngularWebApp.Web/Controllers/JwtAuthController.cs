@@ -19,15 +19,15 @@ namespace AngularWebApp.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class JwtAuthController : ControllerBase
     {
         private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
 
         private readonly AuthDbContext _ctx;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly ILogger<AuthController> _log;
+        private readonly ILogger<JwtAuthController> _log;
 
-        public AuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager, ILogger<AuthController> log)
+        public JwtAuthController(AuthDbContext ctx, UserManager<IdentityUser> userManager, ILogger<JwtAuthController> log)
         {
             _ctx = ctx;
             _userManager = userManager;
@@ -97,21 +97,20 @@ namespace AngularWebApp.Web.Controllers
 
             _log.LogDebug("Refreshing token for user {0}...", principal.Identity.Name);
 
-            using (AuthRepository rpAuth = new AuthRepository(_ctx))
-            {
-                var savedRefreshToken = await rpAuth.FindRefreshToken(model.RefreshToken); // retrieve the refresh token from a data store
-                if (savedRefreshToken == null || 
-                    savedRefreshToken.ClientId != model.ClientId ||
-                    savedRefreshToken.ProtectedTicket != model.AccessToken)
-                    return BadRequest("Invalid refresh token");
+            // retrieve the refresh token from a data store
+            var savedRefreshToken = await _ctx.RefreshTokens.FindAsync(model.RefreshToken);
+            if (savedRefreshToken == null || 
+                savedRefreshToken.ClientId != model.ClientId ||
+                savedRefreshToken.ProtectedTicket != model.AccessToken)
+                return BadRequest("Invalid refresh token");
 
-                await rpAuth.RemoveRefreshToken(savedRefreshToken);
+            _ctx.RefreshTokens.Remove(savedRefreshToken);
+            await _ctx.SaveChangesAsync();
 
-                var accessTokenString = GenerateAccessTokenString(principal.Claims);
-                var refreshTokenString = await NewRefreshToken(model.ClientId, principal.Identity.Name, accessTokenString);
+            var accessTokenString = GenerateAccessTokenString(principal.Claims);
+            var refreshTokenString = await NewRefreshToken(model.ClientId, principal.Identity.Name, accessTokenString);
 
-                return new ObjectResult(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
-            }
+            return new ObjectResult(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
         }
 
         #region Private Helpers
@@ -126,10 +125,15 @@ namespace AngularWebApp.Web.Controllers
             newRefreshToken.ProtectedTicket = accessToken;
             newRefreshToken.IssuedUtc = DateTime.UtcNow;
             newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
-            using (AuthRepository rpAuth = new AuthRepository(_ctx))
-            {
-                await rpAuth.AddRefreshToken(newRefreshToken);
-            }
+
+            var existingToken = _ctx.RefreshTokens.SingleOrDefault(r => r.Subject == newRefreshToken.Subject && r.ClientId == newRefreshToken.ClientId);
+
+            if (existingToken != null)
+                _ctx.RefreshTokens.Remove(existingToken);
+
+            _ctx.RefreshTokens.Add(newRefreshToken);
+
+            await _ctx.SaveChangesAsync();
 
             return newRefreshTokenString;
         }

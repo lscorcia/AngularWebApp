@@ -12,7 +12,6 @@ using AngularWebApp.Web.Authentication;
 using AngularWebApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -63,10 +62,15 @@ namespace AngularWebApp.Web.Controllers
             newRefreshToken.ProtectedTicket = accessToken;
             newRefreshToken.IssuedUtc = DateTime.UtcNow;
             newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
-            using (AuthRepository rpAuth = new AuthRepository(_ctx))
-            {
-                await rpAuth.AddRefreshToken(newRefreshToken);
-            }
+
+            var existingToken = _ctx.RefreshTokens.SingleOrDefault(r => r.Subject == newRefreshToken.Subject && r.ClientId == newRefreshToken.ClientId);
+
+            if (existingToken != null)
+                _ctx.RefreshTokens.Remove(existingToken);
+
+            _ctx.RefreshTokens.Add(newRefreshToken);
+
+            await _ctx.SaveChangesAsync();
 
             return newRefreshTokenString;
         }

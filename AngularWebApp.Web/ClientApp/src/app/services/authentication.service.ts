@@ -1,5 +1,5 @@
 import { Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Observable } from 'rxjs/Observable';
@@ -25,8 +25,8 @@ export class AuthenticationService {
 
   login(username: string, password: string) {
     return new Observable((observer) => {
-      let credentials = { clientId: 'AngularWebApp.Web.Client', username: username, password: password };
-      return this.http.post(this.baseUrl + "api/auth/login", credentials)
+      let parameters = { clientId: 'AngularWebApp.Web.Client', username: username, password: password };
+      return this.http.post(this.baseUrl + "api/jwtauth/login", parameters)
         .subscribe((response: LoginResponse) => {
         var accessToken = response.accessToken;
         var refreshToken = response.refreshToken;
@@ -44,8 +44,8 @@ export class AuthenticationService {
     return new Observable((observer) => {
       const oldAccessToken = this.getAccessToken();
       const oldRefreshToken = this.getRefreshToken();
-      let credentials = { clientId: 'AngularWebApp.Web.Client', accessToken: oldAccessToken, refreshToken: oldRefreshToken };
-      return this.http.post(this.baseUrl + "api/auth/refresh", credentials)
+      let parameters = { clientId: 'AngularWebApp.Web.Client', accessToken: oldAccessToken, refreshToken: oldRefreshToken };
+      return this.http.post(this.baseUrl + "api/jwtauth/refresh", parameters)
         .subscribe((response: LoginResponse) => {
         var accessToken = response.accessToken;
         var refreshToken = response.refreshToken;
@@ -61,8 +61,8 @@ export class AuthenticationService {
 
   windowsLogin() {
     return new Observable((observer) => {
-      let credentials = { clientId: 'AngularWebApp.Web.Client' };
-      return this.http.post(this.baseUrl + "sso/windowsauth/login", credentials)
+      let parameters = { clientId: 'AngularWebApp.Web.Client' };
+      return this.http.post(this.baseUrl + "sso/windowsauth/login", parameters)
         .subscribe((response: LoginResponse) => {
           var accessToken = response.accessToken;
           var refreshToken = response.refreshToken;
@@ -122,34 +122,42 @@ export class AuthenticationService {
     return token;
   }
 
-  register(email: string, username: string, password: string, confirmPassword: string) {
+  register(email: string, username: string, password: string, confirmPassword: string): Observable<RegisterResponse> {
     return new Observable((observer) => {
-      let credentials = JSON.stringify({
-        'email': email,
-        'username': username,
-        'password': password,
-        'confirmPassword': confirmPassword
-      });
-      this.http.post(this.baseUrl + "api/auth/register",
-        credentials,
+      this.http.post(this.baseUrl + "api/jwtauth/register",
         {
-          headers: new HttpHeaders({
-            "Content-Type": "application/json"
-          })
+          email: email,
+          username: username,
+          password: password,
+          confirmPassword: confirmPassword
         }).subscribe(() => {
-          observer.next({ savedSuccessfully: true });
+          observer.next(new RegisterResponse(true));
           observer.complete();
         },
         err => {
-          var errors = [];
-          for (var key in err.error) {
-            for (var i = 0; i < err.error[key].length; i++) {
-              errors.push(err.error[key][i]);
+          if (err.error) {
+            var errors = [];
+            for (var fieldName in err.error) {
+              if (err.error.hasOwnProperty(fieldName)) {
+                errors.push(err.error[fieldName]);
+              }
             }
-          }
 
-          observer.error({ savedSuccessfully: false, registerMessage: "Failed to register user due to: " + errors.join(' ') });
+            observer.error(new RegisterResponse(false, errors));
+          }
+          else
+            observer.error(new RegisterResponse(false, err.message));
         });
     });
+  }
+}
+
+export class RegisterResponse {
+  savedSuccessfully: boolean;
+  messages: string[];
+
+  constructor(savedSuccessully: boolean, messages: string[] = []) {
+    this.savedSuccessfully = savedSuccessully;
+    this.messages = messages;
   }
 }

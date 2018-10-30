@@ -24,11 +24,7 @@ namespace AngularWebApp.Web.Controllers
         public IActionResult List()
         {
             _log.LogInformation("Retrieving refresh tokens...");
-
-            using (AuthRepository rpAuth = new AuthRepository(_ctx))
-            {
-                return Ok(rpAuth.GetAllRefreshTokens());
-            }
+            return Ok(_ctx.RefreshTokens);
         }
 
         [HttpDelete]
@@ -36,14 +32,14 @@ namespace AngularWebApp.Web.Controllers
         {
             _log.LogInformation("Deleting refresh token ID {0}...", id);
 
-            using (AuthRepository rpAuth = new AuthRepository(_ctx))
-            {
-                var result = await rpAuth.RemoveRefreshToken(id);
-                if (!result)
-                    return BadRequest("Token Id does not exist");
+            var refreshToken = await _ctx.RefreshTokens.FindAsync(id);
+            if (refreshToken == null)
+                return BadRequest("Token Id does not exist");
 
-                return Ok();
-            }
+            _ctx.RefreshTokens.Remove(refreshToken);
+            await _ctx.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
