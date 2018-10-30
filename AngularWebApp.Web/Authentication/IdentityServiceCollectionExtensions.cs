@@ -39,6 +39,8 @@ namespace AngularWebApp.Web.Authentication
             where TUser : class
             where TRole : class
         {
+            // Here I have removed all of the Cookie-related configuration calls
+
             // Services used by identity
             // Hosting doesn't add IHttpContextAccessor by default
             services.AddHttpContextAccessor();
