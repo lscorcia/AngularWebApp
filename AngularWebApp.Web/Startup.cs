@@ -139,11 +139,8 @@ namespace AngularWebApp.Web
                     ForwardLimit = null,
                     RequireHeaderSymmetry = false
                 });
-
-                app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
