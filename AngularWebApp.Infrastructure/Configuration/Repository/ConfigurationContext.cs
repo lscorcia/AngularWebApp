@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AngularWebApp.Infrastructure.Configuration
+namespace AngularWebApp.Infrastructure.Configuration.Repository
 {
-    public class ConfigurationContext : DbContext
+    class ConfigurationContext : DbContext
     {
         public ConfigurationContext(DbContextOptions options) 
             : base(options)

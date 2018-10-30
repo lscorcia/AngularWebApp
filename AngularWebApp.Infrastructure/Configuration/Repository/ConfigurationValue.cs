@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AngularWebApp.Infrastructure.Configuration
+namespace AngularWebApp.Infrastructure.Configuration.Repository
 {
-    public class ConfigurationValue
+    class ConfigurationValue
     {
         [Key]
         [MaxLength(255)]

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Configuration;
 using AngularWebApp.Web.Authentication;
+using AngularWebApp.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,9 +52,8 @@ namespace AngularWebApp.Web
                     .Build(),
                 ServiceLifetime.Singleton));
 
-            // Set up data directory
-            services.AddDbContext<AuthDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AuthDbContext")));
+            // Set up data directory for the Authentication subsystem
+            services.AddDataAccessServices(Configuration.GetConnectionString("AuthDbContext"));
 
             services.AddCustomIdentity<IdentityUser, IdentityRole>(options => {
                     // Password settings.

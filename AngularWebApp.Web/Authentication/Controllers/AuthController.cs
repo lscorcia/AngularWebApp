@@ -6,13 +6,13 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using AngularWebApp.Web.Entities;
+using AngularWebApp.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AngularWebApp.Web.Authentication
+namespace AngularWebApp.Web.Authentication.Controllers
 {
     public class AuthController : Controller
     {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace AngularWebApp.Web.Entities
+namespace AngularWebApp.Web.Authentication.Repository
 {
     public class RefreshToken
     {

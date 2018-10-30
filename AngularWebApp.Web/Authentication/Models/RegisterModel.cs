@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AngularWebApp.Web.Models
+namespace AngularWebApp.Web.Authentication.Models
 {
     public class RegisterModel
     {
