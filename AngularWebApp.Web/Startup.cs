@@ -22,8 +22,6 @@ namespace AngularWebApp.Web
 {
     public class Startup
     {
-        private static readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -91,7 +89,7 @@ namespace AngularWebApp.Web
 
                         ValidIssuer = "AngularWebApp.Web",
                         ValidAudience = "AngularWebApp.Web.Client",
-                        IssuerSigningKey = _signingKey,
+                        IssuerSigningKey = GetTokenSigningKey(),
                         ClockSkew = TimeSpan.Zero   //the default for this setting is 5 minutes
                     };
                     options.Events = new JwtBearerEvents
@@ -107,7 +105,9 @@ namespace AngularWebApp.Web
                     };
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .AddControllersAsServices()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -174,5 +174,13 @@ namespace AngularWebApp.Web
                 }
             });
         }
+
+        #region Private Helpers
+        private SymmetricSecurityKey GetTokenSigningKey()
+        {
+            var tokenSigningKeyString = Configuration.GetValue<string>("JwtTokenSigningKey");
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKeyString));
+        }
+        #endregion
     }
 }
