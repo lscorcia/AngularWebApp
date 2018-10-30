@@ -120,5 +120,24 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKeyString));
         }
         #endregion
+
+        public IEnumerable<RefreshToken> GetRefreshTokens()
+        {
+            return ctx.RefreshTokens;
+        }
+
+        public async Task<IActionResult> DeleteRefreshToken(string refreshTokenId)
+        {
+            log.LogInformation("Deleting refresh token ID {0}...", refreshTokenId);
+
+            var refreshToken = await ctx.RefreshTokens.FindAsync(refreshTokenId);
+            if (refreshToken == null)
+                return BadRequest("Token Id does not exist");
+
+            ctx.RefreshTokens.Remove(refreshToken);
+            await ctx.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }

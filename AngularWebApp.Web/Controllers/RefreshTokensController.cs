@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.Authentication.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,35 +11,26 @@ namespace AngularWebApp.Web.Controllers
     [Authorize]
     public class RefreshTokensController : ControllerBase
     {
-        private readonly AuthDbContext _ctx;
-        private readonly ILogger<RefreshTokensController> _log;
+        private readonly AuthController authController;
+        private readonly ILogger<RefreshTokensController> log;
 
-        public RefreshTokensController(AuthDbContext ctx, ILogger<RefreshTokensController> log)
+        public RefreshTokensController(AuthController _authController, ILogger<RefreshTokensController> _log)
         {
-            _ctx = ctx;
-            _log = log;
+            authController = _authController;
+            log = _log;
         }
 
         [HttpGet]
         public IActionResult List()
         {
-            _log.LogInformation("Retrieving refresh tokens...");
-            return Ok(_ctx.RefreshTokens);
+            log.LogInformation("Retrieving refresh tokens...");
+            return Ok(authController.GetRefreshTokens());
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {
-            _log.LogInformation("Deleting refresh token ID {0}...", id);
-
-            var refreshToken = await _ctx.RefreshTokens.FindAsync(id);
-            if (refreshToken == null)
-                return BadRequest("Token Id does not exist");
-
-            _ctx.RefreshTokens.Remove(refreshToken);
-            await _ctx.SaveChangesAsync();
-
-            return Ok();
+            return await authController.DeleteRefreshToken(id);
         }
     }
 }
