@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AngularWebApp.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AngularWebApp.Web.Authentication
+namespace AngularWebApp.Infrastructure.Web.Authentication
 {
     public static class ServiceCollectionExtensions
     {

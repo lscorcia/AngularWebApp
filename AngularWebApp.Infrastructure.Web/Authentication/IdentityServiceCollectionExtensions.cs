@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace AngularWebApp.Web.Authentication
+namespace AngularWebApp.Infrastructure.Web.Authentication
 {
     /// <summary>
     /// Contains extension methods to <see cref="IServiceCollection"/> for configuring identity services.

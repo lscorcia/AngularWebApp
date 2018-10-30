@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AngularWebApp.Web.Authentication.Repository
+namespace AngularWebApp.Infrastructure.Web.Authentication.Repository
 {
     public class AuthDbContext : IdentityDbContext<IdentityUser>
     {

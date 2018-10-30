@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace AngularWebApp.Web.Authentication
+namespace AngularWebApp.Infrastructure.Web.Authentication.Middleware
 {
     public class ReplaceHttp401StatusCodeMiddleware
     {

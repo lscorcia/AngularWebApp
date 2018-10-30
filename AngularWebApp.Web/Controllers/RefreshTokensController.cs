@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AngularWebApp.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

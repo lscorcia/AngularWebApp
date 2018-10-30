@@ -4,12 +4,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using AngularWebApp.Web.Authentication.Models;
+using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace AngularWebApp.Web.Authentication.Controllers
+namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
     [Route("sso/[controller]/[action]")]
     [ApiController]

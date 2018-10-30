@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace AngularWebApp.Web.Authentication.Migrations
+namespace AngularWebApp.Infrastructure.Web.Authentication.Migrations
 {
     public partial class InitialCreate : Migration
     {

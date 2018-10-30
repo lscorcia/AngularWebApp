@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.IISIntegration;
 
-namespace AngularWebApp.Web.Authentication
+namespace AngularWebApp.Infrastructure.Web.Authentication.Middleware
 {
     public class WindowsAuthMiddleware
     {
