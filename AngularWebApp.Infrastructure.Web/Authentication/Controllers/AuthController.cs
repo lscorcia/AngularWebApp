@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         {
             log = _log;
             config = _config;
-
+           
             // Objects obtained through DI shouldn't be disposed
             authDb = _sp.GetService<AuthDbContext>();
         }

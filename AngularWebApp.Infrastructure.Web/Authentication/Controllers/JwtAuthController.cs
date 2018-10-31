@@ -15,14 +15,17 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     public class JwtAuthController : ControllerBase
     {
         private readonly AuthController authController;
-        private readonly UserManager<IdentityUser> userManager;
         private readonly ILogger<JwtAuthController> log;
+        private readonly UserManager<IdentityUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public JwtAuthController(AuthController _authController, UserManager<IdentityUser> _userManager, ILogger<JwtAuthController> _log)
+        public JwtAuthController(AuthController _authController, ILogger<JwtAuthController> _log,
+            UserManager<IdentityUser> _userManager, RoleManager<IdentityRole> _roleManager)
         {
             authController = _authController;
-            userManager = _userManager;
             log = _log;
+            userManager = _userManager;
+            roleManager = _roleManager;
         }
 
         [HttpPost]
@@ -37,12 +40,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             bool isValidLogin = await userManager.CheckPasswordAsync(user, model.Password);
             if (isValidLogin)
             {
-                var claims = new List<Claim>()
-                {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Email, user.Email),
-                };
-
+                var claims = await GetUserClaims(user);
                 var accessTokenString = authController.GenerateAccessTokenString(claims);
                 var refreshTokenString = await authController.NewRefreshToken(model.ClientId, user.UserName, accessTokenString);
 
@@ -96,5 +94,38 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
             return new ObjectResult(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
         }
+
+        #region Private Helpers
+        private async Task<List<Claim>> GetUserClaims(IdentityUser user)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
+
+            var userClaims = await userManager.GetClaimsAsync(user);
+            claims.AddRange(userClaims);
+
+            // Add roles
+            var userRoles = await userManager.GetRolesAsync(user);
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+
+                // Add role claims
+                var role = await roleManager.FindByNameAsync(userRole);
+                if (role != null)
+                {
+                    var roleClaims = await roleManager.GetClaimsAsync(role);
+                    foreach (Claim roleClaim in roleClaims)
+                        claims.Add(roleClaim);
+                }
+            }
+
+            return claims;
+        }
+        #endregion
     }
 }
