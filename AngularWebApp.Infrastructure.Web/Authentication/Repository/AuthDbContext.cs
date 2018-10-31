@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AngularWebApp.Infrastructure.Web.Authentication.Repository
 {
-    public class AuthDbContext : IdentityDbContext<IdentityUser>
+    class AuthDbContext : IdentityDbContext<IdentityUser>
     {
         public AuthDbContext(DbContextOptions<AuthDbContext> options)
             : base(options)

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Configuration;
 using AngularWebApp.Infrastructure.Web.Authentication;
 using AngularWebApp.Infrastructure.Web.Authentication.Middleware;
-using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,8 +53,6 @@ namespace AngularWebApp.Web
                 ServiceLifetime.Singleton));
 
             // Set up data directory for the Authentication subsystem
-            services.AddDataAccessServices(Configuration.GetConnectionString("AuthDbContext"));
-
             services.AddCustomIdentity<IdentityUser, IdentityRole>(options => {
                     // Password settings.
                     options.Password.RequireDigit = true;
@@ -75,7 +72,7 @@ namespace AngularWebApp.Web
                         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                     options.User.RequireUniqueEmail = true;
                 })
-                .AddEntityFrameworkStores<AuthDbContext>()
+                .AddAuthenticationStore(Configuration.GetConnectionString("AuthDbContext"))
                 .AddDefaultTokenProviders();
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

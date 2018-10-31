@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,13 +19,15 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     {
         private readonly ILogger<AuthController> log;
         private readonly IConfiguration config;
-        private readonly AuthDbContext ctx;
+        private readonly AuthDbContext authDb;
 
-        public AuthController(AuthDbContext _ctx, IConfiguration _config, ILogger<AuthController> _log)
+        public AuthController(IServiceProvider _sp, IConfiguration _config, ILogger<AuthController> _log)
         {
             log = _log;
-            ctx = _ctx;
             config = _config;
+
+            // Objects obtained through DI shouldn't be disposed
+            authDb = _sp.GetService<AuthDbContext>();
         }
 
         public async Task<string> NewRefreshToken(string clientId, string username, string accessToken)
@@ -39,14 +42,13 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             newRefreshToken.IssuedUtc = DateTime.UtcNow;
             newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
 
-            var existingToken = ctx.RefreshTokens.SingleOrDefault(r => r.Subject == newRefreshToken.Subject && r.ClientId == newRefreshToken.ClientId);
+            var existingToken = authDb.RefreshTokens.SingleOrDefault(r => r.Subject == newRefreshToken.Subject && r.ClientId == newRefreshToken.ClientId);
+                if (existingToken != null)
+                    authDb.RefreshTokens.Remove(existingToken);
 
-            if (existingToken != null)
-                ctx.RefreshTokens.Remove(existingToken);
+            authDb.RefreshTokens.Add(newRefreshToken);
 
-            ctx.RefreshTokens.Add(newRefreshToken);
-
-            await ctx.SaveChangesAsync();
+            await authDb.SaveChangesAsync();
 
             return newRefreshTokenString;
         }
@@ -93,14 +95,33 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         public async Task RemoveExistingRefreshToken(string clientId, string accessToken, string refreshToken)
         {
-            var savedRefreshToken = await ctx.RefreshTokens.FindAsync(refreshToken);
+            var savedRefreshToken = await authDb.RefreshTokens.FindAsync(refreshToken);
             if (savedRefreshToken == null ||
                 savedRefreshToken.ClientId != clientId ||
                 savedRefreshToken.ProtectedTicket != accessToken)
                 throw new Exception("Invalid refresh token");
 
-            ctx.RefreshTokens.Remove(savedRefreshToken);
-            await ctx.SaveChangesAsync();
+            authDb.RefreshTokens.Remove(savedRefreshToken);
+            await authDb.SaveChangesAsync();
+        }
+
+        public List<RefreshToken> GetRefreshTokens()
+        {
+            return authDb.RefreshTokens.ToList();
+        }
+
+        public async Task<IActionResult> DeleteRefreshToken(string refreshTokenId)
+        {
+            log.LogInformation("Deleting refresh token ID {0}...", refreshTokenId);
+
+            var refreshToken = await authDb.RefreshTokens.FindAsync(refreshTokenId);
+            if (refreshToken == null)
+                return BadRequest("Token Id does not exist");
+
+            authDb.RefreshTokens.Remove(refreshToken);
+            await authDb.SaveChangesAsync();
+
+            return Ok();
         }
 
         #region Private Helpers
@@ -120,24 +141,5 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKeyString));
         }
         #endregion
-
-        public IEnumerable<RefreshToken> GetRefreshTokens()
-        {
-            return ctx.RefreshTokens;
-        }
-
-        public async Task<IActionResult> DeleteRefreshToken(string refreshTokenId)
-        {
-            log.LogInformation("Deleting refresh token ID {0}...", refreshTokenId);
-
-            var refreshToken = await ctx.RefreshTokens.FindAsync(refreshTokenId);
-            if (refreshToken == null)
-                return BadRequest("Token Id does not exist");
-
-            ctx.RefreshTokens.Remove(refreshToken);
-            await ctx.SaveChangesAsync();
-
-            return Ok();
-        }
     }
 }
