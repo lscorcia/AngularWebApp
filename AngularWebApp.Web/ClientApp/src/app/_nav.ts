@@ -27,8 +27,19 @@ export const navItems = [
     name: 'Settings'
   },
   {
-    name: 'Refresh Tokens',
-    url: '/refreshTokens',
-    icon: 'icon-login'
+    name: 'Users',
+    icon: 'icon-people',
+    children: [
+      {
+        name: 'Roles',
+        url: '/roles',
+        icon: 'icon-organization'
+      },
+      {
+        name: 'Refresh Tokens',
+        url: '/refreshTokens',
+        icon: 'icon-login'
+      }
+    ]
   }
 ];

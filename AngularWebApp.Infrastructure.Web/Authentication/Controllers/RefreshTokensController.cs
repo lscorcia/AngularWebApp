@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using AngularWebApp.Infrastructure.Web.Authentication.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace AngularWebApp.Web.Controllers
+namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -30,6 +29,7 @@ namespace AngularWebApp.Web.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(string id)
         {
+            log.LogInformation("Deleting refresh token '{0}'...", id);
             return await authController.DeleteRefreshToken(id);
         }
     }

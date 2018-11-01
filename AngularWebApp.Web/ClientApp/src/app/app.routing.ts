@@ -88,6 +88,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
       },
       {
+        path: 'roles',
+        loadChildren: './views/settings/roles/roles.module#RolesModule',
+        canActivate: [AuthGuard]
+      },
+      {
         path: 'refreshTokens',
         loadChildren: './views/settings/refreshTokens/tokens.module#TokensModule',
         canActivate: [AuthGuard]

@@ -1,4 +1,4 @@
-<h1>List of Refresh Tokens ({{tokens.length}})</h1>
+<h1>Issued Refresh Tokens ({{tokens.length}})</h1>
 <button type="button" class="btn btn-primary active mb-4" (click)="refresh();">Refresh</button>
 
 <p *ngIf="!tokens"><em>Loading...</em></p>
@@ -14,9 +14,9 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let token of tokens">
+    <tr *ngFor="let token of tokens; index as i">
       <td>
-        <a (click)="deleteRefreshTokens(index,token.id)" [routerLink]="">Remove</a>
+        <a (click)="deleteRefreshTokens(i,token.id)" [routerLink]="">Remove</a>
       </td>
       <td>
         {{ token.subject }}
