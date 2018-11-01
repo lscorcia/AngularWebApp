@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 
 import { RolesComponent } from './roles.component';
 import { RolesRoutingModule } from './roles-routing.module';
+import { RolesService } from '../../../services/roles.service';
 
 @NgModule({
   imports: [
@@ -12,6 +13,9 @@ import { RolesRoutingModule } from './roles-routing.module';
     FormsModule,
     RolesRoutingModule
   ],
-  declarations: [ RolesComponent ]
+  declarations: [RolesComponent],
+  providers: [
+    RolesService
+  ]
 })
 export class RolesModule { }

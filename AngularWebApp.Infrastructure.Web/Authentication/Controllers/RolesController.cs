@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,44 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         public IActionResult List()
         {
             return Ok(roleManager.Roles);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(AddRoleInputDto model)
+        {
+            bool roleExists = await roleManager.RoleExistsAsync(model.Name);
+            if (!roleExists)
+            {
+                var role = new IdentityRole(model.Name);
+                await roleManager.CreateAsync(role);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditRoleInputDto model)
+        {
+            var role = await roleManager.FindByIdAsync(model.Id);
+            if (role == null)
+                return BadRequest(String.Format("Role ID {0} not found", model.Id));
+
+            role.Name = model.Name;
+
+            await roleManager.UpdateAsync(role);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(EditRoleInputDto model)
+        {
+            var role = await roleManager.FindByIdAsync(model.Id);
+            if (role == null)
+                return Ok();
+
+            await roleManager.DeleteAsync(role);
+
+            return Ok();
         }
     }
 }
