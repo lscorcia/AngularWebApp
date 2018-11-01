@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Configuration;
+using AngularWebApp.Infrastructure.DI;
 using AngularWebApp.Infrastructure.Web.Authentication;
 using AngularWebApp.Infrastructure.Web.Authentication.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Scrutor;
 
 namespace AngularWebApp.Web
 {
@@ -52,6 +54,13 @@ namespace AngularWebApp.Web
                     .Build(),
                 ServiceLifetime.Singleton));
 
+            services.Scan(scan => scan
+                .FromApplicationDependencies() // 1. Find the concrete classes
+                .AddClasses(classes => classes.AssignableTo<IApplicationService>())        //    to register
+                .UsingRegistrationStrategy(RegistrationStrategy.Skip) // 2. Define how to handle duplicates
+                .AsSelf()    // 2. Specify which services they are registered as
+                .WithTransientLifetime()); // 3. Set the lifetime for the services
+
             // Set up data directory for the Authentication subsystem
             services.AddCustomIdentity<IdentityUser, IdentityRole>(options => {
                     // Password settings.
@@ -69,7 +78,7 @@ namespace AngularWebApp.Web
 
                     // User settings.
                     options.User.AllowedUserNameCharacters =
-                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+\\";
                     options.User.RequireUniqueEmail = true;
                 })
                 .AddAuthenticationStore(Configuration.GetConnectionString("AuthDbContext"))
