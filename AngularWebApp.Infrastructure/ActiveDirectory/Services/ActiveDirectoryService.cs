@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using AngularWebApp.Infrastructure.ActiveDirectory.Models;
 using AngularWebApp.Infrastructure.DI;
 
-namespace AngularWebApp.Infrastructure.ActiveDirectory.Controllers
+namespace AngularWebApp.Infrastructure.ActiveDirectory.Services
 {
     public class ActiveDirectoryService: IApplicationService
     {

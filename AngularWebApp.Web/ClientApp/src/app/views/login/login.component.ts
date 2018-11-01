@@ -28,9 +28,16 @@ export class LoginComponent {
           this.loginMessage = "Login failed: Invalid credentials";
         else {
           var errors = [];
-          for (var fieldName in err.error) {
-            if (err.error.hasOwnProperty(fieldName)) {
-              errors.push(err.error[fieldName]);
+          if (err.error) {
+            if (typeof (err.error) === 'string') {
+              errors.push(err.error);
+            }
+            else {
+              for (var fieldName in err.error) {
+                if (err.error.hasOwnProperty(fieldName)) {
+                  errors.push(err.error[fieldName]);
+                }
+              }
             }
           }
 
@@ -46,9 +53,16 @@ export class LoginComponent {
         this.router.navigate(["/"]);
       }, err => {
         var errors = [];
-        for (var fieldName in err.error) {
-          if (err.error.hasOwnProperty(fieldName)) {
-            errors.push(err.error[fieldName]);
+        if (err.error) {
+          if (typeof (err.error) === 'string') {
+            errors.push(err.error);
+          }
+          else {
+            for (var fieldName in err.error) {
+              if (err.error.hasOwnProperty(fieldName)) {
+                errors.push(err.error[fieldName]);
+              }
+            }
           }
         }
 

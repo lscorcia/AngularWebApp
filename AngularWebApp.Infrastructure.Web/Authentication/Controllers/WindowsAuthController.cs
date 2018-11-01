@@ -4,13 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AngularWebApp.Infrastructure.ActiveDirectory.Models;
+using AngularWebApp.Infrastructure.ActiveDirectory.Services;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using AngularWebApp.Infrastructure.ActiveDirectory.Models;
-using AngularWebApp.Infrastructure.ActiveDirectory.Controllers;
 
 namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
