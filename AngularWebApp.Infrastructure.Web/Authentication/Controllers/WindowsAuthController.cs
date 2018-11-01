@@ -57,7 +57,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var userLoginInfo = new UserLoginInfo("AD", userName, userName);
+                var userLoginInfo = new UserLoginInfo("AD", userName, userInfo.DisplayName);
                 var addLoginResult = await userManager.AddLoginAsync(newUser, userLoginInfo);
                 if (!addLoginResult.Succeeded)
                 {
