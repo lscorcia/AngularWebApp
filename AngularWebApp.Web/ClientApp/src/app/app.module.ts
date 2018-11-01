@@ -53,6 +53,7 @@ import {
 import { AppRoutingModule } from './app.routing';
 
 // Import 3rd party components
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
@@ -83,6 +84,7 @@ export function jwtOptionsFactory(injector: Injector) {
     AppSidebarModule,
     PerfectScrollbarModule,
     BsDropdownModule.forRoot(),
+    ModalModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
     BrowserAnimationsModule, // required by ToastrModule

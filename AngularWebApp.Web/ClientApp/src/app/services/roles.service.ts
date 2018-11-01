@@ -21,6 +21,20 @@ export class RolesService {
     });
   }
 
+  add(roleName: string) {
+    var parameters = { name: roleName };
+
+    return new Observable((observer) => {
+      return this.http.post(this.baseUrl + "api/roles/add", parameters)
+        .subscribe((response) => {
+          observer.next(response);
+          observer.complete();
+        }, err => {
+          observer.error(err);
+        });
+    });
+  }
+
   delete(roleId) {
     return new Observable((observer) => {
       this.http.delete(this.baseUrl + 'api/roles/delete/?id=' + encodeURIComponent(roleId))
