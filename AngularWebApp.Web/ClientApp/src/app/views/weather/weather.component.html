@@ -1,25 +1,30 @@
-<h1>Weather forecast</h1>
+<div class="card">
+  <div class="card-header">
+    <i class="fa fa-align-justify"></i> Weather forecast
+  </div>
+  <div class="card-body">
+    <p>This component demonstrates fetching data from the server.</p>
+    <button type="button" class="btn btn-primary active mb-4" (click)="refreshData();">Refresh</button>
 
-<p>This component demonstrates fetching data from the server.</p>
-<button type="button" class="btn btn-primary active mb-4" (click)="refreshData();">Refresh</button>
+    <p *ngIf="!forecasts"><em>Loading...</em></p>
 
-<p *ngIf="!forecasts"><em>Loading...</em></p>
-
-<table class='table table-striped table-bordered table-hover' *ngIf="forecasts">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Temp. (C)</th>
-      <th>Temp. (F)</th>
-      <th>Summary</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let forecast of forecasts">
-      <td>{{ forecast.dateFormatted }}</td>
-      <td>{{ forecast.temperatureC }}</td>
-      <td>{{ forecast.temperatureF }}</td>
-      <td>{{ forecast.summary }}</td>
-    </tr>
-  </tbody>
-</table>
+    <table class='table table-striped table-bordered table-hover' *ngIf="forecasts">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Temp. (C)</th>
+        <th>Temp. (F)</th>
+        <th>Summary</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let forecast of forecasts">
+        <td>{{ forecast.dateFormatted }}</td>
+        <td>{{ forecast.temperatureC }}</td>
+        <td>{{ forecast.temperatureF }}</td>
+        <td>{{ forecast.summary }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,35 +1,41 @@
-<h1>Issued Refresh Tokens ({{tokens.length}})</h1>
-<button type="button" class="btn btn-primary active mb-4" (click)="refresh();">Refresh</button>
+<div class="card">
+  <div class="card-header">
+    <i class="fa fa-align-justify"></i> Issued Refresh Tokens ({{tokens.length}})
+  </div>
+  <div class="card-body">
+    <button type="button" class="btn btn-primary active mb-4" (click)="refresh();">Refresh</button>
 
-<p *ngIf="!tokens"><em>Loading...</em></p>
+    <p *ngIf="!tokens"><em>Loading...</em></p>
 
-<table class="table table-striped table-bordered table-hover">
-  <thead>
-    <tr>
-      <th>Action</th>
-      <th>Subject</th>
-      <th>Client</th>
-      <th>Issued At (UTC)</th>
-      <th>Expires At (UTC)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let token of tokens; index as i">
-      <td>
-        <a (click)="deleteRefreshTokens(i,token.id)" [routerLink]="">Remove</a>
-      </td>
-      <td>
-        {{ token.subject }}
-      </td>
-      <td>
-        {{ token.clientId }}
-      </td>
-      <td>
-        {{ token.issuedUtc | date:'medium' }}
-      </td>
-      <td>
-        {{ token.expiresUtc | date:'medium' }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <table class="table table-striped table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Subject</th>
+          <th>Client</th>
+          <th>Issued At (UTC)</th>
+          <th>Expires At (UTC)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let token of tokens; index as i">
+          <td>
+            <a (click)="deleteRefreshTokens(i,token.id)" [routerLink]="">Remove</a>
+          </td>
+          <td>
+            {{ token.subject }}
+          </td>
+          <td>
+            {{ token.clientId }}
+          </td>
+          <td>
+            {{ token.issuedUtc | date:'medium' }}
+          </td>
+          <td>
+            {{ token.expiresUtc | date:'medium' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
