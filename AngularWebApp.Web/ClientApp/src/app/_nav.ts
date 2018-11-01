@@ -16,19 +16,19 @@ export const navItems = [
   {
     name: 'Orders',
     url: '/orders',
-    icon: 'icon-drop'
-  },
-  {
-    title: true,
-    name: 'Tokens'
-  },
-  {
-    name: 'Tokens',
-    url: '/tokens',
-    icon: 'icon-drop',
+    icon: 'icon-notebook',
     badge: {
       variant: 'info',
       text: 'NEW'
     }
+  },
+  {
+    title: true,
+    name: 'Settings'
+  },
+  {
+    name: 'Refresh Tokens',
+    url: '/refreshTokens',
+    icon: 'icon-login'
   }
 ];

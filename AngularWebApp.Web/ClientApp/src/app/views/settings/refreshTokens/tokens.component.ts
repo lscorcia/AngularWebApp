@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'tokens',
+  selector: 'refreshtokens',
   templateUrl: './tokens.component.html'
 })
 export class TokensComponent {
