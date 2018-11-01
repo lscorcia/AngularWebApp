@@ -12,6 +12,7 @@ import { parse } from 'url';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
 
+// Perfect Scrollbar
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
@@ -19,6 +20,10 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
+
+// ngxToaster
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AppComponent } from './app.component';
 
@@ -80,6 +85,8 @@ export function jwtOptionsFactory(injector: Injector) {
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
+    BrowserAnimationsModule, // required by ToastrModule
+    ToastrModule.forRoot({ closeButton: true, positionClass: 'toast-top-center' }),
     NgProgressModule.forRoot({ spinner: false }),
     NgProgressHttpModule.forRoot(),
     JwtModule.forRoot({ jwtOptionsProvider: { provide: JWT_OPTIONS, useFactory: jwtOptionsFactory, deps: [Injector] } }),

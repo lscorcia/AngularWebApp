@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-refreshtokens',
@@ -8,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class TokensComponent {
   public tokens: Token[] = [];
 
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
+  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private toastr: ToastrService) {
   }
 
   ngOnInit() {
@@ -29,7 +30,9 @@ export class TokensComponent {
     this.http.delete(this.baseUrl + 'api/RefreshTokens/Delete/?id=' + encodeURIComponent(tokenid))
       .subscribe(() => {
         this.tokens.splice(index, 1);
+        this.toastr.success('Refresh token deleted');
       }, err => {
+        this.toastr.error('Error deleting refresh token');
         console.log(err);
       });
   }
