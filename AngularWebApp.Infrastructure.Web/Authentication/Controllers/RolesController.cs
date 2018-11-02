@@ -30,7 +30,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         [HttpGet]
         public IActionResult List()
         {
-            return Ok(roleManager.Roles.Select(t => new { t.Id, t.Name }));
+            return Ok(roleManager.Roles.Select(t => new { t.Id, t.Name }).OrderBy(t => t.Name));
         }
 
         [HttpPost]

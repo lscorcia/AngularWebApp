@@ -8,7 +8,7 @@
   </div>
   <div class="card-body">
     <div class="btn-toolbar">
-      <button type="button" class="btn btn-primary active mb-4 mr-1" (click)="openModal(template)"><i class="fa fa-plus"></i> Add</button>
+      <button type="button" class="btn btn-primary active mb-4 mr-1" (click)="showEditRolePopup()"><i class="fa fa-plus"></i> Add</button>
     </div>
 
     <p *ngIf="!roles"><em>Loading...</em></p>
@@ -23,7 +23,7 @@
       <tbody>
         <tr *ngFor="let role of roles; index as i">
           <td>
-            <a (click)="openModal(template, role)" [routerLink]="">Edit</a> | 
+            <a (click)="showEditRolePopup(role)" [routerLink]="">Edit</a> | 
             <a (click)="deleteRole(i, role.id)" [routerLink]="">Remove</a>
           </td>
           <td>
@@ -34,24 +34,3 @@
     </table>
   </div>
 </div>
-
-<ng-template #template>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Modal</h4>
-    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <form #heroForm="ngForm" (keyup.enter)="model.id ? editRole(model): addRole(model)">
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="name" name="name" [(ngModel)]="model.name" required>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="model.id ? editRole(model): addRole(model)">OK</button>
-  </div>
-</ng-template>
