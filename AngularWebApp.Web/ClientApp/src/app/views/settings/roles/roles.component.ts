@@ -29,8 +29,8 @@ export class RolesComponent {
       });
   }
 
-  showEditRolePopup(role: Role) {
-    var modalRef = this.modalService.show(EditRolePopupComponent, { initialState: { role: Object.assign({}, role || new Role()) } });
+  showEditRolePopup(role: Role = new Role()) {
+    var modalRef = this.modalService.show(EditRolePopupComponent, { initialState: { role: Object.assign({}, role) } });
     modalRef.content.onCommand.subscribe(result => {
       if (result === "ok") {
         if (!modalRef.content.role.id)
