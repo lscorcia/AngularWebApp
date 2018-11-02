@@ -1,6 +1,6 @@
 import { Component, Inject, TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RolesService } from '../../../services/roles.service';
+import { RolesService, Role } from '../../../services/roles.service';
 import { ToastrService } from 'ngx-toastr';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -12,6 +12,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 export class RolesComponent {
   public roles: Role[] = [];
   private modalRef: BsModalRef;
+
+  model: Role = new Role();
 
   constructor(private http: HttpClient, private rolesService: RolesService, private toastr: ToastrService,
     private modalService: BsModalService,
@@ -32,18 +34,30 @@ export class RolesComponent {
       });
   }
 
-  openModal(template: TemplateRef<any>) {
+  openModal(template: TemplateRef<any>, role: Role = new Role()) {
+    this.model = role;
     this.modalRef = this.modalService.show(template);
   }
 
-  addRole(roleName) {
-    this.rolesService.add(roleName)
+  addRole(role: Role) {
+    this.rolesService.add(role)
       .subscribe((response) => {
         this.modalRef.hide();
         this.refresh();
       }, err => {
         console.log(err);
         this.toastr.error("Error adding role");
+      });
+  }
+
+  editRole(role: Role) {
+    this.rolesService.edit(role)
+      .subscribe((response) => {
+        this.modalRef.hide();
+        this.refresh();
+      }, err => {
+        console.log(err);
+        this.toastr.error("Error editing role");
       });
   }
 
@@ -57,9 +71,4 @@ export class RolesComponent {
         this.toastr.error("Error retrieving data");
       });
   }
-}
-
-interface Role {
-  id: string,
-  name: string;
 }

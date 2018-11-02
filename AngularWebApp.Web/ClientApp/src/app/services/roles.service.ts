@@ -9,10 +9,10 @@ export class RolesService {
     @Inject('BASE_URL') private baseUrl: string) {
   }
 
-  list() {
+  list(): Observable<Role[]> {
     return new Observable((observer) => {
       return this.http.get(this.baseUrl + "api/roles/list")
-        .subscribe((response) => {
+        .subscribe((response: Role[]) => {
         observer.next(response);
         observer.complete();
       }, err => {
@@ -21,11 +21,25 @@ export class RolesService {
     });
   }
 
-  add(roleName: string) {
-    var parameters = { name: roleName };
+  add(role: Role) {
+    var parameters = { Name: role.name };
 
     return new Observable((observer) => {
       return this.http.post(this.baseUrl + "api/roles/add", parameters)
+        .subscribe((response) => {
+          observer.next(response);
+          observer.complete();
+        }, err => {
+          observer.error(err);
+        });
+    });
+  }
+
+  edit(role: Role) {
+    var parameters = { Id: role.id, Name: role.name };
+
+    return new Observable((observer) => {
+      return this.http.post(this.baseUrl + "api/roles/edit", parameters)
         .subscribe((response) => {
           observer.next(response);
           observer.complete();
@@ -46,4 +60,9 @@ export class RolesService {
         });
     });
   }
+}
+
+export class Role {
+  id: string;
+  name: string;
 }
