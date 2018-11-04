@@ -22,7 +22,7 @@
       <tbody>
         <tr *ngFor="let token of tokens; index as i">
           <td>
-            <a (click)="deleteRefreshTokens(i,token.id)" [routerLink]="">Remove</a>
+            <a (click)="deleteRefreshToken(i,token.id)" [routerLink]="">Remove</a>
           </td>
           <td>
             {{ token.subject }}

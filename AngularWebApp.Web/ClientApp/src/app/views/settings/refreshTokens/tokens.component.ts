@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { AuthenticationService, Token } from '../../../services/authentication.service';
 
 @Component({
   selector: 'app-refreshtokens',
@@ -9,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 export class TokensComponent {
   public tokens: Token[] = [];
 
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private toastr: ToastrService) {
+  constructor(private authenticationService: AuthenticationService, private toastr: ToastrService) {
   }
 
   ngOnInit() {
@@ -18,30 +18,21 @@ export class TokensComponent {
 
   refresh() {
     this.tokens = [];
-    this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens/List")
-      .subscribe(response => {
+    this.authenticationService.listRefreshTokens()
+      .subscribe((response: Token[]) => {
         this.tokens = response;
       }, err => {
-        console.log(err);
+        this.toastr.error('Error retrieving data');
       });
   }
 
-  deleteRefreshTokens(index, tokenid) {
-    this.http.delete(this.baseUrl + 'api/RefreshTokens/Delete/?id=' + encodeURIComponent(tokenid))
+  deleteRefreshToken(index, tokenid) {
+    this.authenticationService.deleteRefreshToken(tokenid)
       .subscribe(() => {
         this.tokens.splice(index, 1);
         this.toastr.success('Refresh token deleted');
       }, err => {
         this.toastr.error('Error deleting refresh token');
-        console.log(err);
       });
   }
-}
-
-interface Token {
-  id: number;
-  subject: string;
-  clientId: string;
-  issuedUtc: Date;
-  expiresUtc: Date;
 }

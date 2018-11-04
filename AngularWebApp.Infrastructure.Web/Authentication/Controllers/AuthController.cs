@@ -7,7 +7,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,23 +105,21 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             await authDb.SaveChangesAsync();
         }
 
-        public List<RefreshToken> GetRefreshTokens()
+        public IEnumerable<RefreshToken> GetRefreshTokens()
         {
-            return authDb.RefreshTokens.ToList();
+            return authDb.RefreshTokens;
         }
 
-        public async Task<IActionResult> DeleteRefreshToken(string refreshTokenId)
+        public async Task DeleteRefreshToken(string refreshTokenId)
         {
             log.LogInformation("Deleting refresh token ID {0}...", refreshTokenId);
 
             var refreshToken = await authDb.RefreshTokens.FindAsync(refreshTokenId);
-            if (refreshToken == null)
-                return BadRequest("Token Id does not exist");
-
-            authDb.RefreshTokens.Remove(refreshToken);
-            await authDb.SaveChangesAsync();
-
-            return Ok();
+            if (refreshToken != null)
+            { 
+                authDb.RefreshTokens.Remove(refreshToken);
+                await authDb.SaveChangesAsync();
+            }
         }
 
         #region Private Helpers

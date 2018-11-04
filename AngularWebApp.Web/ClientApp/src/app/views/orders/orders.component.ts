@@ -1,5 +1,6 @@
-import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { OrdersService, Order } from '../../services/orders.service';
 
 @Component({
   selector: 'orders',
@@ -8,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class OrdersComponent {
   public orders: Order[];
 
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
+  constructor(private ordersService: OrdersService, private toastr: ToastrService) {
   }
 
   ngOnInit() {
@@ -17,18 +18,11 @@ export class OrdersComponent {
 
   refreshData() {
     this.orders = [];
-    this.http.get<Order[]>(this.baseUrl + "api/Orders/List")
+    this.ordersService.list()
       .subscribe(response => {
         this.orders = response;
       }, err => {
-        console.log(err);
+        this.toastr.error('Error retrieving data');
       });
   }
-}
-
-interface Order {
-  orderId: number;
-  customerName: string;
-  shipperCity: string;
-  isShipped: boolean;
 }

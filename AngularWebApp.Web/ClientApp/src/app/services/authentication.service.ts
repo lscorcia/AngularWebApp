@@ -150,6 +150,34 @@ export class AuthenticationService {
         });
     });
   }
+
+  listRefreshTokens() {
+    return new Observable<Token[]>((observer) => {
+      this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens/List")
+        .subscribe(response => {
+            observer.next(response);
+            observer.complete();
+        },
+        err => {
+          console.log(err);
+          observer.error(err);
+        });
+    });
+  }
+
+  deleteRefreshToken(tokenid) {
+    return new Observable((observer) => {
+      this.http.delete(this.baseUrl + 'api/RefreshTokens/Delete/' + encodeURIComponent(tokenid))
+        .subscribe((response) => {
+          observer.next(response);
+          observer.complete();
+        },
+        err => {
+          console.log(err);
+          observer.error(err);
+        });
+    });
+  }
 }
 
 export class RegisterResponse {
@@ -160,4 +188,12 @@ export class RegisterResponse {
     this.savedSuccessfully = savedSuccessully;
     this.messages = messages;
   }
+}
+
+export class Token {
+  id: number;
+  subject: string;
+  clientId: string;
+  issuedUtc: Date;
+  expiresUtc: Date;
 }

@@ -1,5 +1,6 @@
-import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { WeatherService, WeatherForecast } from '../../services/weather.service';
 
 @Component({
   selector: 'weather',
@@ -8,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class WeatherComponent {
   public forecasts: WeatherForecast[];
 
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
+  constructor(private weatherService: WeatherService, private toastr: ToastrService) {
   }
 
   ngOnInit() {
@@ -17,15 +18,13 @@ export class WeatherComponent {
 
   refreshData() {
     this.forecasts = [];
-    this.http.get<WeatherForecast[]>(this.baseUrl + 'api/WeatherForecasts/List').subscribe(result => {
-      this.forecasts = result;
-    }, error => console.error(error));
+    this.weatherService.list()
+      .subscribe(result => {
+        this.forecasts = result;
+      },
+      err => {
+        this.toastr.error('Error retrieving data');
+      }
+    );
   }
-}
-
-interface WeatherForecast {
-  dateFormatted: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
 }

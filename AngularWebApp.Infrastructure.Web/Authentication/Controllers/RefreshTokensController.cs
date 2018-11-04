@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,17 +24,21 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         }
 
         [HttpGet]
-        public IActionResult List()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<List<RefreshToken>> List()
         {
             log.LogInformation("Retrieving refresh tokens...");
-            return Ok(authController.GetRefreshTokens());
+            return authController.GetRefreshTokens().ToList();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(string id)
+        [HttpDelete("{*id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> Delete(string id)
         {
             log.LogInformation("Deleting refresh token '{0}'...", id);
-            return await authController.DeleteRefreshToken(id);
+            await authController.DeleteRefreshToken(id);
+
+            return Ok();
         }
     }
 }
