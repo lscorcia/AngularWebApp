@@ -55,12 +55,11 @@ export class RolesComponent {
 
   deleteRole(index, roleId) {
     this.rolesService.delete(roleId)
-      .subscribe((response: Role[]) => {
-        this.roles = response;
+      .subscribe((response) => {
         this.roles.splice(index, 1);
       }, err => {
         console.log(err);
-        this.toastr.error("Error retrieving data");
+        this.toastr.error("Error deleting role");
       });
   }
 }

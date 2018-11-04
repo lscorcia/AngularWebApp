@@ -51,7 +51,7 @@ export class RolesService {
 
   delete(roleId) {
     return new Observable((observer) => {
-      this.http.delete(this.baseUrl + 'api/roles/delete/?id=' + encodeURIComponent(roleId))
+      this.http.delete(this.baseUrl + 'api/roles/delete/' + encodeURIComponent(roleId))
         .subscribe((response) => {
           observer.next(response);
           observer.complete();

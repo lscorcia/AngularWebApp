@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -28,45 +28,70 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         }
 
         [HttpGet]
-        public IActionResult List()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<List<GetRoleOutputDto>> List()
         {
-            return Ok(roleManager.Roles.Select(t => new { t.Id, t.Name }).OrderBy(t => t.Name));
+            return roleManager.Roles
+                .Select(t => new GetRoleOutputDto() { Id = t.Id, Name = t.Name })
+                .OrderBy(t => t.Name)
+                .ToList();
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<GetRoleOutputDto> Get(string id)
+        {
+            var entity = roleManager.Roles.FirstOrDefault(t => t.Id == id);
+            if (entity == null)
+                return NotFound();
+
+            return new GetRoleOutputDto() { Id = entity.Id, Name = entity.Name };
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(AddRoleInputDto model)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<string>> Add(AddRoleInputDto model)
         {
+            log.LogInformation("Adding role {0}", model.Name);
+
             bool roleExists = await roleManager.RoleExistsAsync(model.Name);
-            if (!roleExists)
-            {
-                var role = new IdentityRole(model.Name);
-                await roleManager.CreateAsync(role);
-            }
+            if (roleExists)
+                return Conflict(String.Format("Role '{0}' already exists!", model.Name));
 
-            return Ok();
+            var role = new IdentityRole(model.Name);
+            await roleManager.CreateAsync(role);
+
+            return CreatedAtAction(nameof(Get), new { id = role.Id }, new { id = role.Id });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditRoleInputDto model)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> Edit(EditRoleInputDto model)
         {
+            log.LogInformation("Editing role {0} - new name = {1}", model.Id, model.Name);
+
             var role = await roleManager.FindByIdAsync(model.Id);
             if (role == null)
-                return BadRequest(String.Format("Role ID {0} not found", model.Id));
+                return NotFound(String.Format("Role ID '{0}' not found!", model.Id));
 
             role.Name = model.Name;
-
             await roleManager.UpdateAsync(role);
+
             return Ok();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(EditRoleInputDto model)
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> Delete(string id)
         {
-            var role = await roleManager.FindByIdAsync(model.Id);
-            if (role == null)
-                return Ok();
+            log.LogInformation("Deleting role {0}", id);
 
-            await roleManager.DeleteAsync(role);
+            var role = await roleManager.FindByIdAsync(id);
+            if (role != null)
+                await roleManager.DeleteAsync(role);
 
             return Ok();
         }

@@ -13,20 +13,20 @@
 
     <p *ngIf="!roles"><em>Loading...</em></p>
 
-    <table class="table table-striped table-bordered table-hover">
-      <thead>
+    <table class="table table-striped table-bordered table-hover table-sm">
+      <thead class="thead-light">
         <tr>
-          <th>Action</th>
+          <th class="text-center">Action</th>
           <th>Name</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let role of roles; index as i">
-          <td>
-            <a (click)="showEditRolePopup(role)" [routerLink]="">Edit</a> | 
-            <a (click)="deleteRole(i, role.id)" [routerLink]="">Remove</a>
+          <td style="width: 80px" class="text-center">
+            <button type="button" class="btn btn-outline-primary btn-sm mr-1"  (click)="showEditRolePopup(role)" title="Edit"><i class="fa fa-edit"></i></button>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="deleteRole(i, role.id)" title="Delete"><i class="fa fa-trash"></i></button>
           </td>
-          <td>
+          <td class="align-middle">
             {{ role.name }}
           </td>
         </tr>
