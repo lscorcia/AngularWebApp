@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+export class Role {
+  id: string;
+  name: string;
+}
+
 @Injectable()
 export class RolesService {
   constructor(private http: HttpClient, 
@@ -72,9 +77,4 @@ export class RolesService {
         });
     });
   }
-}
-
-export class Role {
-  id: string;
-  name: string;
 }

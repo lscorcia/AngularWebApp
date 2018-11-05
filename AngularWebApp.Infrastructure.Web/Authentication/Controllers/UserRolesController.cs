@@ -39,5 +39,31 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
                 .OrderBy(t => t.Role).ThenBy(t => t.UserName)
                 .ToList();
         }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> Add(AddUserToRoleInputDto model)
+        {
+            log.LogInformation("Adding user {0} to role {1}", model.UserName, model.Role);
+
+            var user = await userManager.FindByNameAsync(model.UserName);
+            if (user != null)
+                await userManager.AddToRoleAsync(user, model.Role);
+
+            return Ok();
+        }
+
+        [HttpDelete("{roleName}/{userName}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> Delete(string roleName, string userName)
+        {
+            log.LogInformation("Deleting user {0} from role {1}", userName, roleName);
+
+            var user = await userManager.FindByNameAsync(userName);
+            if (user != null)
+                await userManager.RemoveFromRoleAsync(user, roleName);
+
+            return Ok();
+        }
     }
 }

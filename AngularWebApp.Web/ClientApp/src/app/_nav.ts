@@ -38,7 +38,7 @@ export const navItems = [
       {
         name: 'Users in Roles',
         url: '/userRoles',
-        icon: 'icon-organization'
+        icon: 'icon-user-following'
       },
       {
         name: 'Refresh Tokens',
