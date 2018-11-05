@@ -55,6 +55,7 @@ namespace AngularWebApp.Web
                     .Build(),
                 ServiceLifetime.Singleton));
 
+            // Services registration
             services.Scan(scan => scan
                 .FromApplicationDependencies() // 1. Find the concrete classes
                 .AddClasses(classes => classes.AssignableTo<IApplicationService>())        //    to register
@@ -84,7 +85,7 @@ namespace AngularWebApp.Web
                 })
                 .AddAuthenticationStore(Configuration.GetConnectionString("AuthDbContext"))
                 .AddDefaultTokenProviders();
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -95,8 +96,8 @@ namespace AngularWebApp.Web
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
 
-                        ValidIssuer = "AngularWebApp.Web",
-                        ValidAudience = "AngularWebApp.Web.Client",
+                        ValidIssuer = Configuration.GetValue<string>("JwtTokenIssuer"),
+                        ValidAudience = Configuration.GetValue<string>("JwtTokenAudience"),
                         IssuerSigningKey = GetTokenSigningKey(),
                         ClockSkew = TimeSpan.Zero   //the default for this setting is 5 minutes
                     };

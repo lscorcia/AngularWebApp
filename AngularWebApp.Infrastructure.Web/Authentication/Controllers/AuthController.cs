@@ -55,8 +55,11 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         public string GenerateAccessTokenString(IEnumerable<Claim> claims)
         {
-            var jwt = new JwtSecurityToken(issuer: "AngularWebApp.Web",
-                audience: "AngularWebApp.Web.Client",
+            var tokenIssuerString = config.GetValue<string>("JwtTokenIssuer");
+            var tokenAudienceString = config.GetValue<string>("JwtTokenAudience");
+
+            var jwt = new JwtSecurityToken(issuer: tokenIssuerString,
+                audience: tokenAudienceString,
                 claims: claims, //the user's claims, for example new Claim[] { new Claim(ClaimTypes.Name, "The username"), //... 
                 notBefore: DateTime.UtcNow,
                 expires: DateTime.UtcNow.AddMinutes(1),
@@ -69,6 +72,9 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
+            var tokenIssuerString = config.GetValue<string>("JwtTokenIssuer");
+            var tokenAudienceString = config.GetValue<string>("JwtTokenAudience");
+
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
@@ -76,8 +82,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
                 ValidateIssuerSigningKey = true,
                 ValidateLifetime = false, // Here we are saying that we don't care about the token's expiration date
 
-                ValidIssuer = "AngularWebApp.Web",
-                ValidAudience = "AngularWebApp.Web.Client",
+                ValidIssuer = tokenIssuerString,
+                ValidAudience = tokenAudienceString,
                 IssuerSigningKey = GetTokenSigningKey()
             };
 

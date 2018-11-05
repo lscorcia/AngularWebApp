@@ -14,9 +14,28 @@ interface LoginResponse {
   refreshToken: string;
 }
 
+export class RegisterResponse {
+  savedSuccessfully: boolean;
+  messages: string[];
+
+  constructor(savedSuccessully: boolean, messages: string[] = []) {
+    this.savedSuccessfully = savedSuccessully;
+    this.messages = messages;
+  }
+}
+
+export class Token {
+  id: number;
+  subject: string;
+  clientId: string;
+  issuedUtc: Date;
+  expiresUtc: Date;
+}
+
 @Injectable()
 export class AuthenticationService {
-  public AuthInfo: AuthInfo; 
+  public AuthInfo: AuthInfo;
+  private clientId: string = 'AngularWebApp.Web.Client';
 
   constructor(private http: HttpClient, private jwtHelper: JwtHelperService, 
     @Inject('BASE_URL') private baseUrl: string) {
@@ -25,7 +44,7 @@ export class AuthenticationService {
 
   login(username: string, password: string) {
     return new Observable((observer) => {
-      let parameters = { clientId: 'AngularWebApp.Web.Client', username: username, password: password };
+      let parameters = { clientId: this.clientId, username: username, password: password };
       return this.http.post(this.baseUrl + "api/jwtauth/login", parameters)
         .subscribe((response: LoginResponse) => {
         var accessToken = response.accessToken;
@@ -44,7 +63,7 @@ export class AuthenticationService {
     return new Observable((observer) => {
       const oldAccessToken = this.getAccessToken();
       const oldRefreshToken = this.getRefreshToken();
-      let parameters = { clientId: 'AngularWebApp.Web.Client', accessToken: oldAccessToken, refreshToken: oldRefreshToken };
+      let parameters = { clientId: this.clientId, accessToken: oldAccessToken, refreshToken: oldRefreshToken };
       return this.http.post(this.baseUrl + "api/jwtauth/refresh", parameters)
         .subscribe((response: LoginResponse) => {
         var accessToken = response.accessToken;
@@ -61,7 +80,7 @@ export class AuthenticationService {
 
   windowsLogin() {
     return new Observable((observer) => {
-      let parameters = { clientId: 'AngularWebApp.Web.Client' };
+      let parameters = { clientId: this.clientId };
       return this.http.post(this.baseUrl + "sso/windowsauth/login", parameters)
         .subscribe((response: LoginResponse) => {
           var accessToken = response.accessToken;
@@ -178,22 +197,4 @@ export class AuthenticationService {
         });
     });
   }
-}
-
-export class RegisterResponse {
-  savedSuccessfully: boolean;
-  messages: string[];
-
-  constructor(savedSuccessully: boolean, messages: string[] = []) {
-    this.savedSuccessfully = savedSuccessully;
-    this.messages = messages;
-  }
-}
-
-export class Token {
-  id: number;
-  subject: string;
-  clientId: string;
-  issuedUtc: Date;
-  expiresUtc: Date;
 }
