@@ -15,7 +15,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrators")]
     public class RolesController : ControllerBase
     {
         private readonly ILogger<WindowsAuthController> log;

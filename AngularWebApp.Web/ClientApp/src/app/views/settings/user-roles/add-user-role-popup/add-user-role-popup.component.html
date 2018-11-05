@@ -8,14 +8,16 @@
   <div class="modal-body">
     <div class="form-group">
       <div>
-        <label for="role">Role</label>
-        <input type="text" id="role" name="role" placeholder="Role Name" class="form-control"
-             [formControl]="editForm.controls['role']" required
-             [class.is-invalid]="!editForm.controls['role'].valid && editForm.controls['role'].touched">
+        <label for="role" class="col-form-label">Role</label>
+        <select id="role" name="role" placeholder="Role Name" class="form-control"
+                [formControl]="editForm.controls['role']" required
+                [class.is-invalid]="!editForm.controls['role'].valid && editForm.controls['role'].touched">
+          <option *ngFor="let role of roles" (value)="role">{{role}}</option>
+        </select>
         <em *ngIf="editForm.controls['role'].hasError('required')" class="invalid-feedback">Field Role is required</em>
       </div>
       <div>
-        <label for="username">User Name</label>
+        <label for="username" class="col-form-label">User Name</label>
         <input type="text" id="username" name="username" placeholder="User Name" class="form-control"
                [formControl]="editForm.controls['username']" required
                [class.is-invalid]="!editForm.controls['username'].valid && editForm.controls['username'].touched">

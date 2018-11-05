@@ -16,7 +16,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrators")]
     public class UserRolesController : ControllerBase
     {
         private readonly ILogger<UserRolesController> log;
@@ -47,8 +47,10 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             log.LogInformation("Adding user {0} to role {1}", model.UserName, model.Role);
 
             var user = await userManager.FindByNameAsync(model.UserName);
-            if (user != null)
-                await userManager.AddToRoleAsync(user, model.Role);
+            if (user == null)
+                return BadRequest(String.Format("User '{0}' not found!", model.UserName));
+
+            await userManager.AddToRoleAsync(user, model.Role);
 
             return Ok();
         }

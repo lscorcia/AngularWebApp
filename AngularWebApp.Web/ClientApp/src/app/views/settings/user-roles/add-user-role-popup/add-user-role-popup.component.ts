@@ -4,16 +4,19 @@ import { UserRolesService, UserRole } from '../../../../services/userroles.servi
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs/Subject';
 import { ToastrService } from 'ngx-toastr';
+import { RolesService } from "../../../../services/roles.service";
 
 @Component({
   selector: 'app-add-user-role-popup',
   templateUrl: './add-user-role-popup.component.html'
 })
 export class AddUserRolePopupComponent implements OnInit {
+  public roles: string[];
   public onCommand: Subject<string>;
   editForm: FormGroup;
 
-  constructor(private userRolesService: UserRolesService, private toastr: ToastrService, private bsModalRef: BsModalRef, private fb: FormBuilder) { }
+  constructor(private userRolesService: UserRolesService, private rolesService: RolesService,
+    private toastr: ToastrService, private bsModalRef: BsModalRef, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.editForm = this.fb.group({
@@ -21,6 +24,13 @@ export class AddUserRolePopupComponent implements OnInit {
       'username': ['', Validators.required]
     });
     this.onCommand = new Subject<string>();
+
+    this.rolesService.list().subscribe((response) => {
+      this.roles = response.map(a => a.name);
+    }, err => {
+      console.log(err);
+      this.toastr.error("Error retrieving roles list");
+    });
   }
 
   onSubmit(): void {
