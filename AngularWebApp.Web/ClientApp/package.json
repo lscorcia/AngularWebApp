@@ -38,7 +38,7 @@
     "@angular/router": "^6.1.10",
     "@auth0/angular-jwt": "^2.0.0",
     "@coreui/angular": "^2.0.0",
-    "@coreui/coreui": "^2.0.22",
+    "@coreui/coreui": "^2.0.25",
     "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.2.0",
     "@coreui/icons": "0.3.0",
     "@ngx-progressbar/core": "^5.2.1",
