@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,10 +19,10 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     public class RolesController : ControllerBase
     {
         private readonly ILogger<WindowsAuthController> log;
-        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly RoleManager<ApplicationRole> roleManager;
 
         public RolesController(ILogger<WindowsAuthController> _log,
-            RoleManager<IdentityRole> _roleManager)
+            RoleManager<ApplicationRole> _roleManager)
         {
             log = _log;
             roleManager = _roleManager;
@@ -60,7 +61,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             if (roleExists)
                 return Conflict(String.Format("Role '{0}' already exists!", model.Name));
 
-            var role = new IdentityRole(model.Name);
+            var role = new ApplicationRole(model.Name);
             await roleManager.CreateAsync(role);
 
             return CreatedAtAction(nameof(Get), new { id = role.Id }, new { id = role.Id });

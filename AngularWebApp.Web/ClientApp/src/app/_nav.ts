@@ -36,6 +36,11 @@ export const navItems = [
         icon: 'icon-organization'
       },
       {
+        name: 'Users in Roles',
+        url: '/userRoles',
+        icon: 'icon-organization'
+      },
+      {
         name: 'Refresh Tokens',
         url: '/refreshTokens',
         icon: 'icon-login'

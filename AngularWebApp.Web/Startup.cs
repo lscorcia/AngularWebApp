@@ -6,6 +6,7 @@ using AngularWebApp.Infrastructure.Configuration;
 using AngularWebApp.Infrastructure.DI;
 using AngularWebApp.Infrastructure.Web.Authentication;
 using AngularWebApp.Infrastructure.Web.Authentication.Middleware;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -64,7 +65,9 @@ namespace AngularWebApp.Web
                 .WithTransientLifetime()); // 3. Set the lifetime for the services
 
             // Set up data directory for the Authentication subsystem
-            services.AddCustomIdentity<IdentityUser, IdentityRole>(options => {
+            services.AddCustomIdentity<ApplicationUser, ApplicationRole>(options => {
+                    options.Stores.MaxLengthForKeys = 128;
+
                     // Password settings.
                     options.Password.RequireDigit = true;
                     options.Password.RequireLowercase = true;

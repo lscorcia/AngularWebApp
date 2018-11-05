@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,11 +17,11 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     {
         private readonly AuthController authController;
         private readonly ILogger<JwtAuthController> log;
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<ApplicationRole> roleManager;
 
         public JwtAuthController(AuthController _authController, ILogger<JwtAuthController> _log,
-            UserManager<IdentityUser> _userManager, RoleManager<IdentityRole> _roleManager)
+            UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager)
         {
             authController = _authController;
             log = _log;
@@ -57,7 +58,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         {
             log.LogDebug("Registration attempt by user {0}...", model.UserName);
 
-            var user = new IdentityUser { UserName = model.UserName, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
             var result = await userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -96,7 +97,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         }
 
         #region Private Helpers
-        private async Task<List<Claim>> GetUserClaims(IdentityUser user)
+        private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
         {
             List<Claim> claims = new List<Claim>()
             {

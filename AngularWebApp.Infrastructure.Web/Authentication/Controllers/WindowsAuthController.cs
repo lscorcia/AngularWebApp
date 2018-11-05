@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.ActiveDirectory.Models;
 using AngularWebApp.Infrastructure.ActiveDirectory.Services;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
+using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +21,13 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     {
         private readonly AuthController authController;
         private readonly ILogger<WindowsAuthController> log;
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<ApplicationRole> roleManager;
         private readonly ActiveDirectoryService activeDirectoryController;
 
         public WindowsAuthController(AuthController _authController, ILogger<WindowsAuthController> _log,
             ActiveDirectoryService _activeDirectoryController,
-            UserManager<IdentityUser> _userManager, RoleManager<IdentityRole> _roleManager)
+            UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager)
         {
             authController = _authController;
             activeDirectoryController = _activeDirectoryController;
@@ -49,7 +50,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             var user = await userManager.FindByLoginAsync("AD", userName);
             if (user == null)
             {
-                var newUser = new IdentityUser { UserName = userName, Email = userInfo.Email };
+                var newUser = new ApplicationUser { UserName = userName, Email = userInfo.Email };
                 var createResult = await userManager.CreateAsync(newUser);
                 if (!createResult.Succeeded)
                 {
@@ -74,7 +75,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         }
 
         #region Private Helpers
-        private async Task<List<Claim>> GetUserClaims(IdentityUser user)
+        private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
         {
             List<Claim> claims = new List<Claim>()
             {

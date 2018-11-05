@@ -1,0 +1,39 @@
+<div class="card">
+  <div class="card-header">
+    <i class="fa fa-align-justify"></i> Users in Roles ({{userroles.length}})
+
+    <div class="card-header-actions">
+      <button type="button" class="card-header-action btn btn-primary active" (click)="refresh();" title="Refresh"><i class="fa fa-refresh"></i></button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="btn-toolbar">
+      <button type="button" class="btn btn-primary active mb-4 mr-1"><i class="fa fa-plus"></i> Add</button>
+    </div>
+
+    <p *ngIf="!userroles"><em>Loading...</em></p>
+
+    <table class="table table-striped table-bordered table-hover table-sm">
+      <thead class="thead-light">
+        <tr>
+          <th class="text-center">Action</th>
+          <th>Role</th>
+          <th>User Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let userrole of userroles; index as i">
+          <td style="width: 50px" class="text-center">
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="deleteRole(i, role.id)" title="Delete"><i class="fa fa-trash"></i></button>
+          </td>
+          <td class="align-middle">
+            {{ userrole.role }}
+          </td>
+          <td class="align-middle">
+            {{ userrole.username }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
