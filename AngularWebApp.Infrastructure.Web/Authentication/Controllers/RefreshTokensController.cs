@@ -11,7 +11,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrators")]
     public class RefreshTokensController : ControllerBase
     {
         private readonly AuthController authController;
