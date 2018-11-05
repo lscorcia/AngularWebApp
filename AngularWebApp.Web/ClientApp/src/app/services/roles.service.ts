@@ -21,6 +21,18 @@ export class RolesService {
     });
   }
 
+  get(id: string): Observable<Role> {
+    return new Observable((observer) => {
+      return this.http.get(this.baseUrl + "api/roles/get/" + id)
+        .subscribe((response: Role) => {
+          observer.next(response);
+          observer.complete();
+        }, err => {
+          observer.error(err);
+        });
+    });
+  }
+
   add(role: Role) {
     var parameters = { Name: role.name };
 

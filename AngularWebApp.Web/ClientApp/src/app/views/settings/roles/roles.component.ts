@@ -29,26 +29,11 @@ export class RolesComponent {
       });
   }
 
-  showEditRolePopup(role: Role = new Role()) {
-    var modalRef = this.modalService.show(EditRolePopupComponent, { initialState: { role: Object.assign({}, role) } });
-    modalRef.content.onCommand.subscribe(result => {
+  showEditRolePopup(roleId: string) {
+    var modalRef = this.modalService.show(EditRolePopupComponent, { initialState: { roleId: roleId } });
+    modalRef.content.onCommand.subscribe((result: string) => {
       if (result === "ok") {
-        if (!modalRef.content.role.id)
-          this.rolesService.add(modalRef.content.role)
-            .subscribe((response) => {
-              this.refresh();
-            }, err => {
-              console.log(err);
-              this.toastr.error("Error adding role");
-            });
-        else
-          this.rolesService.edit(modalRef.content.role)
-            .subscribe((response) => {
-              this.refresh();
-            }, err => {
-              console.log(err);
-              this.toastr.error("Error editing role");
-            });
+          this.refresh();
       }
     });
   }

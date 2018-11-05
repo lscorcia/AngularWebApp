@@ -4,15 +4,20 @@
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<div class="modal-body">
-  <form #editForm="ngForm" (keyup.enter)="ok()">
+<form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+  <input type="hidden" id="role_id" name="role_id" (value)="roleId" />
+
+  <div class="modal-body">
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" class="form-control" id="name" name="name" [(ngModel)]="role.name" required>
+      <input type="text" id="name" name="name" placeholder="Role name" class="form-control"
+             [formControl]="editForm.controls['name']" required
+             [class.is-invalid]="!editForm.controls['name'].valid && editForm.controls['name'].touched">
+      <em *ngIf="editForm.controls['name'].hasError('required')" class="invalid-feedback">Field Name is required</em>
     </div>
-  </form>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="ok()">OK</button>
-</div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+    <button type="submit" class="btn btn-primary" [disabled]="!editForm.valid">OK</button>
+  </div>
+</form>
