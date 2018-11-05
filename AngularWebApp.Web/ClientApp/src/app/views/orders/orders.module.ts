@@ -5,13 +5,17 @@ import { CommonModule } from '@angular/common';
 
 import { OrdersComponent } from './orders.component';
 import { OrdersRoutingModule } from './orders-routing.module';
+import { OrdersService } from "../../services/orders.service";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    OrdersRoutingModule
+    OrdersRoutingModule,
   ],
-  declarations: [ OrdersComponent ]
+  declarations: [OrdersComponent],
+  providers: [
+    OrdersService
+  ]
 })
 export class OrdersModule { }

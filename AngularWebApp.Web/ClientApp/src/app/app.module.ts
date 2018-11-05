@@ -6,8 +6,6 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { JWT_OPTIONS, JwtInterceptor, JwtModule } from '@auth0/angular-jwt';
 import { AuthenticationService } from './services/authentication.service';
 import { RefreshTokenInterceptor } from './services/refresh-token-interceptor';
-import { OrdersService } from './services/orders.service';
-import { WeatherService } from './services/weather.service';
 import { AuthGuard } from './guards/auth-guard.service';
 import { Injector } from '@angular/core';
 import { parse } from 'url';
@@ -110,8 +108,6 @@ export function jwtOptionsFactory(injector: Injector) {
   ],
   providers: [
     AuthenticationService,
-    OrdersService,
-    WeatherService,
     AuthGuard,
     JwtInterceptor,
     {
