@@ -29,7 +29,7 @@ export class RolesComponent {
       });
   }
 
-  showEditRolePopup(roleId: string) {
+  showEditRolePopup(roleId: string = null) {
     var modalRef = this.modalService.show(EditRolePopupComponent, { initialState: { roleId: roleId } });
     modalRef.content.onCommand.subscribe((result: string) => {
       if (result === "ok") {
