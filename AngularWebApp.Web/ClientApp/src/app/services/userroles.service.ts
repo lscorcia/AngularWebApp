@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 export class UserRole {
-  username: string;
-  role: string;
+  UserName: string;
+  Role: string;
 }
 
 @Injectable()
@@ -15,7 +15,7 @@ export class UserRolesService {
   }
 
   list(): Observable<UserRole[]> {
-    return new Observable((observer) => {
+    return new Observable<UserRole[]>((observer) => {
       return this.http.get(this.baseUrl + "api/userroles/list")
         .subscribe((response: UserRole[]) => {
             observer.next(response);
@@ -27,11 +27,9 @@ export class UserRolesService {
     });
   }
 
-  add(role: string, userName: string) {
-    var parameters = { userName: userName, role: role };
-
-    return new Observable((observer) => {
-      return this.http.post(this.baseUrl + "api/userroles/add", parameters)
+  add(userRole: UserRole): Observable<any> {
+    return new Observable<any>((observer) => {
+      return this.http.post(this.baseUrl + "api/userroles/add", userRole)
         .subscribe((response) => {
           observer.next(response);
           observer.complete();
@@ -41,8 +39,8 @@ export class UserRolesService {
     });
   }
 
-  delete(roleName: string, userName: string) {
-    return new Observable((observer) => {
+  delete(roleName: string, userName: string): Observable<any> {
+    return new Observable<any>((observer) => {
       this.http.delete(this.baseUrl + 'api/userroles/delete/' + encodeURIComponent(roleName) + '/' + encodeURIComponent(userName))
         .subscribe((response) => {
           observer.next(response);

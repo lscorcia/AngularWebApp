@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { Observable } from 'rxjs/Observable';
 import { UserRolesService, UserRole } from '../../../services/userroles.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { AddUserRolePopupComponent } from "./add-user-role-popup/add-user-role-popup.component";
 
 @Component({
   selector: 'app-user-roles',
@@ -10,7 +11,8 @@ import { UserRolesService, UserRole } from '../../../services/userroles.service'
 export class UserRolesComponent implements OnInit {
   public userroles: UserRole[] = [];
 
-  constructor(private userRolesService: UserRolesService, private toastr: ToastrService) {
+  constructor(private userRolesService: UserRolesService, private toastr: ToastrService,
+    private modalService: BsModalService) {
   }
 
   ngOnInit() {
@@ -27,14 +29,13 @@ export class UserRolesComponent implements OnInit {
       });
   }
 
-  addRole(role: string, userName: string) {
-    this.userRolesService.add(role, userName)
-      .subscribe((response) => {
+  showAddUserRolePopup() {
+    var modalRef = this.modalService.show(AddUserRolePopupComponent);
+    modalRef.content.onCommand.subscribe((result: string) => {
+      if (result === "ok") {
         this.refresh();
-      }, err => {
-        console.log(err);
-        this.toastr.error("Error adding role");
-      });
+      }
+    });
   }
 
   deleteRole(index: number, role: string, userName: string) {

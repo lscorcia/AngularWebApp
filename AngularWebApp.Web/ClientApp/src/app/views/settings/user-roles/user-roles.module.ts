@@ -7,6 +7,7 @@ import { UserRolesComponent } from './user-roles.component';
 import { UserRolesRoutingModule } from './user-roles-routing.module';
 import { UserRolesService } from '../../../services/userroles.service';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { AddUserRolePopupComponent } from './add-user-role-popup/add-user-role-popup.component';
 
 @NgModule({
   imports: [
@@ -17,10 +18,14 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     UserRolesRoutingModule
   ],
   declarations: [
-    UserRolesComponent
+    UserRolesComponent,
+    AddUserRolePopupComponent
   ],
   providers: [
     UserRolesService
+  ],
+  entryComponents: [
+    AddUserRolePopupComponent
   ]
 })
 export class UserRolesModule { }
