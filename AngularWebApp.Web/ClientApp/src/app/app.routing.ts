@@ -99,7 +99,7 @@ export const routes: Routes = [
       },
       {
         path: 'refreshTokens',
-        loadChildren: './views/settings/refreshTokens/tokens.module#TokensModule',
+        loadChildren: './views/settings/refresh-tokens/refresh-tokens.module#RefreshTokensModule',
         canActivate: [AuthGuard]
       }
     ]

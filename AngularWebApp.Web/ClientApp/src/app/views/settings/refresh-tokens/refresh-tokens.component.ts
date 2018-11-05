@@ -3,10 +3,10 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthenticationService, Token } from '../../../services/authentication.service';
 
 @Component({
-  selector: 'app-refreshtokens',
-  templateUrl: './tokens.component.html'
+  selector: 'app-refresh-tokens',
+  templateUrl: './refresh-tokens.component.html'
 })
-export class TokensComponent {
+export class RefreshTokensComponent {
   public tokens: Token[] = [];
 
   constructor(private authenticationService: AuthenticationService, private toastr: ToastrService) {

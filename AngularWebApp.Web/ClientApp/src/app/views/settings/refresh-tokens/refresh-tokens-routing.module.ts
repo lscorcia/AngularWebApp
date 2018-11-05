@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { Routes,
      RouterModule } from '@angular/router';
 
-import { TokensComponent } from './tokens.component';
+import { RefreshTokensComponent } from './refresh-tokens.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: TokensComponent,
+    component: RefreshTokensComponent,
     data: {
       title: 'Refresh Tokens'
     }
@@ -18,4 +18,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TokensRoutingModule {}
+export class RefreshTokensRoutingModule {}
