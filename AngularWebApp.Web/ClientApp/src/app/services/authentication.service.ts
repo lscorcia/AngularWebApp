@@ -172,7 +172,7 @@ export class AuthenticationService {
 
   listRefreshTokens() {
     return new Observable<Token[]>((observer) => {
-      this.http.get<Token[]>(this.baseUrl + "api/RefreshTokens/List")
+      this.http.get<Token[]>(this.baseUrl + "api/refreshtokens/list")
         .subscribe(response => {
             observer.next(response);
             observer.complete();

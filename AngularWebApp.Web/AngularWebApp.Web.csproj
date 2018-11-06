@@ -48,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AngularWebApp.Backend\AngularWebApp.Backend.csproj" />
     <ProjectReference Include="..\AngularWebApp.Infrastructure.Web\AngularWebApp.Infrastructure.Web.csproj" />
     <ProjectReference Include="..\AngularWebApp.Infrastructure\AngularWebApp.Infrastructure.csproj" />
   </ItemGroup>

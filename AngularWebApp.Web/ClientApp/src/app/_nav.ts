@@ -32,17 +32,17 @@ export const navItems = [
     children: [
       {
         name: 'Roles',
-        url: '/roles',
+        url: '/settings/users/roles',
         icon: 'icon-organization'
       },
       {
         name: 'Users in Roles',
-        url: '/userRoles',
+        url: '/settings/users/userRoles',
         icon: 'icon-user-following'
       },
       {
         name: 'Refresh Tokens',
-        url: '/refreshTokens',
+        url: '/settings/users/refreshTokens',
         icon: 'icon-login'
       }
     ]

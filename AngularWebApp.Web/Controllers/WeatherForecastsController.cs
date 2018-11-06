@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AngularWebApp.Backend.Weather.Models;
+using AngularWebApp.Backend.Weather.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,45 +13,21 @@ namespace AngularWebApp.Web.Controllers
     [ApiController]
     public class WeatherForecastsController : ControllerBase
     {
-        private readonly ILogger<WeatherForecastsController> _log;
+        private WeatherService weatherService { get; }
+        private readonly ILogger<WeatherForecastsController> log;
 
-        public WeatherForecastsController(ILogger<WeatherForecastsController> log)
+        public WeatherForecastsController(ILogger<WeatherForecastsController> _log,
+            WeatherService _weatherService)
         {
-            _log = log;
+            log = _log;
+            weatherService = _weatherService;
         }
-
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> List()
+        public IEnumerable<GetWeatherForecastOutputDto> List()
         {
-            _log.LogInformation("Retrieving weather forecasts...");
-
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
-        }
-
-        public class WeatherForecast
-        {
-            public string DateFormatted { get; set; }
-            public int TemperatureC { get; set; }
-            public string Summary { get; set; }
-
-            public int TemperatureF
-            {
-                get
-                {
-                    return 32 + (int)(TemperatureC / 0.5556);
-                }
-            }
+            log.LogInformation("Retrieving weather forecasts...");
+            return weatherService.GetWeatherForecasts();
         }
     }
 }

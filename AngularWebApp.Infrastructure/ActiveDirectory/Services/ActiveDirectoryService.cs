@@ -11,8 +11,8 @@ namespace AngularWebApp.Infrastructure.ActiveDirectory.Services
 {
     public class ActiveDirectoryService: IApplicationService
     {
-        public IConfiguration Configuration { get; set; }
-        protected string ActiveDirectoryLdapUrl { get { return Configuration.GetValue<string>("MiSE.ActiveDirectory.LdapUrl"); } }
+        private IConfiguration Configuration { get; }
+        private string ActiveDirectoryLdapUrl { get { return Configuration.GetValue<string>("MiSE.ActiveDirectory.LdapUrl"); } }
 
         public ActiveDirectoryService(IConfiguration _config)
         {
