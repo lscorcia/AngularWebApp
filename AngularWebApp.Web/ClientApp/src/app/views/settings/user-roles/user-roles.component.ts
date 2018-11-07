@@ -23,9 +23,6 @@ export class UserRolesComponent implements OnInit {
     this.userRolesService.list()
       .subscribe((response: UserRole[]) => {
         this.userroles = response;
-      }, err => {
-        console.log(err);
-        this.toastr.error("Error retrieving data");
       });
   }
 
@@ -42,9 +39,6 @@ export class UserRolesComponent implements OnInit {
     this.userRolesService.delete(role, userName)
       .subscribe((response) => {
         this.userroles.splice(index, 1);
-      }, err => {
-        console.log(err);
-        this.toastr.error("Error deleting role");
       });
   }
 }

@@ -28,9 +28,6 @@ export class EditRolePopupComponent implements OnInit {
       this.rolesService.get(this.roleId)
         .subscribe((response: Role) => {
           this.editForm.setValue({ role_id: response.id, name: response.name });
-        }, err => {
-          console.log(err);
-          this.toastr.error("Error retrieving role");
         });
     }
   }
@@ -46,10 +43,6 @@ export class EditRolePopupComponent implements OnInit {
         .subscribe((response) => {
             this.bsModalRef.hide();
             this.onCommand.next("ok");
-          },
-          err => {
-            console.log(err);
-            this.toastr.error("Error adding role");
           });
     } else {
       var editRole = new Role();
@@ -60,9 +53,6 @@ export class EditRolePopupComponent implements OnInit {
         .subscribe((response) => {
           this.bsModalRef.hide();
           this.onCommand.next("ok");
-        }, err => {
-          console.log(err);
-          this.toastr.error("Error editing role");
         });
     }
   }

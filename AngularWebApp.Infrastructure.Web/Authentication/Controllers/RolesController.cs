@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -59,7 +60,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
             bool roleExists = await roleManager.RoleExistsAsync(model.Name);
             if (roleExists)
-                return Conflict(String.Format("Role '{0}' already exists!", model.Name));
+                return Conflict(new ErrorResponse(String.Format("Role '{0}' already exists!", model.Name)));
 
             var role = new ApplicationRole(model.Name);
             await roleManager.CreateAsync(role);
@@ -76,7 +77,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
             var role = await roleManager.FindByIdAsync(model.Id);
             if (role == null)
-                return NotFound(String.Format("Role ID '{0}' not found!", model.Id));
+                return NotFound(new ErrorResponse(String.Format("Role ID '{0}' not found!", model.Id)));
 
             role.Name = model.Name;
             await roleManager.UpdateAsync(role);

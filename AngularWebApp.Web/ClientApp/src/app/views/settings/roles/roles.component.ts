@@ -23,9 +23,6 @@ export class RolesComponent {
     this.rolesService.list()
       .subscribe((response: Role[]) => {
         this.roles = response;
-      }, err => {
-        console.log(err);
-        this.toastr.error("Error retrieving data");
       });
   }
 
@@ -42,9 +39,6 @@ export class RolesComponent {
     this.rolesService.delete(roleId)
       .subscribe((response) => {
         this.roles.splice(index, 1);
-      }, err => {
-        console.log(err);
-        this.toastr.error("Error deleting role");
       });
   }
 }

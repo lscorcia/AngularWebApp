@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using AngularWebApp.Backend.Orders.Models;
 using AngularWebApp.Backend.Orders.Services;
@@ -28,10 +29,10 @@ namespace AngularWebApp.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public IEnumerable<GetOrdersOutputDto> List()
+        public async Task<IEnumerable<GetOrdersOutputDto>> List()
         {
             log.LogInformation("Retrieving orders...");
-            return ordersService.GetOrders();
+            return await ordersService.GetOrders();
         }
     }
 }

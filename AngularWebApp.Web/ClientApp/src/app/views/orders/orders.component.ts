@@ -21,8 +21,6 @@ export class OrdersComponent {
     this.ordersService.list()
       .subscribe(response => {
         this.orders = response;
-      }, err => {
-        this.toastr.error('Error retrieving data');
       });
   }
 }

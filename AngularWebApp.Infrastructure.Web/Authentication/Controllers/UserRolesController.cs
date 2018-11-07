@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -48,7 +49,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
             var user = await userManager.FindByNameAsync(model.UserName);
             if (user == null)
-                return BadRequest(String.Format("User '{0}' not found!", model.UserName));
+                return BadRequest(new ErrorResponse(String.Format("User '{0}' not found!", model.UserName)));
 
             await userManager.AddToRoleAsync(user, model.Role);
 

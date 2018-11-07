@@ -7,6 +7,7 @@ using AngularWebApp.Infrastructure.DI;
 using AngularWebApp.Infrastructure.Web.Authentication;
 using AngularWebApp.Infrastructure.Web.Authentication.Middleware;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -187,6 +188,10 @@ namespace AngularWebApp.Web
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
+            // Enable extended error information for ASP.net MVC API
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
+
+            //
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

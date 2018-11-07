@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
             var user = await userManager.FindByNameAsync(model.UserName);
             if (user == null)
-                return BadRequest("User not found");
+                return BadRequest(new ErrorResponse("User not found"));
 
             bool isValidLogin = await userManager.CheckPasswordAsync(user, model.Password);
             if (isValidLogin)
@@ -83,7 +84,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         {
             var principal = authController.GetPrincipalFromExpiredToken(model.AccessToken);
             if (principal == null)
-                return BadRequest("Principal for token not found");
+                return BadRequest(new ErrorResponse("Principal for token not found"));
 
             log.LogDebug("Refreshing token for user {0}...", principal.Identity.Name);
 

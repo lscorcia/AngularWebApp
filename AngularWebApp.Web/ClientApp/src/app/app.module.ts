@@ -45,6 +45,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 
 // HTTP Interceptors
+import { HttpErrorInterceptor } from './services/http-error-interceptor';
 import { RefreshTokenInterceptor } from './services/refresh-token-interceptor';
 
 // App Services
@@ -119,6 +120,11 @@ import { AppRoutingModule } from './app.routing';
     {
       provide: HTTP_INTERCEPTORS,
       useExisting: JwtInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
       multi: true
     },
     {

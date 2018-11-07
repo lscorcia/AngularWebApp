@@ -16,8 +16,6 @@ export class RefreshTokenComponent {
         this.toastr.success('Access token refreshed');
         this.router.navigate(["/"]);
       }, (err) => {
-        console.log(err);
-        this.toastr.error('Error refreshing Access token');
         this.router.navigate(["/"]);
       });
   }

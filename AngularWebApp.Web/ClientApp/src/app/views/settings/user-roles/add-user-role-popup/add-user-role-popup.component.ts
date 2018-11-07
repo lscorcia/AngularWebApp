@@ -27,9 +27,6 @@ export class AddUserRolePopupComponent implements OnInit {
 
     this.rolesService.list().subscribe((response) => {
       this.roles = response.map(a => a.name);
-    }, err => {
-      console.log(err);
-      this.toastr.error("Error retrieving roles list");
     });
   }
 
@@ -44,10 +41,6 @@ export class AddUserRolePopupComponent implements OnInit {
       .subscribe((response) => {
           this.bsModalRef.hide();
           this.onCommand.next("ok");
-        },
-        err => {
-          console.log(err);
-          this.toastr.error("Error adding role");
         });
   }
 

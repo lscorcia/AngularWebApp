@@ -21,8 +21,6 @@ export class RefreshTokensComponent {
     this.authenticationService.listRefreshTokens()
       .subscribe((response: Token[]) => {
         this.tokens = response;
-      }, err => {
-        this.toastr.error('Error retrieving data');
       });
   }
 
@@ -31,8 +29,6 @@ export class RefreshTokensComponent {
       .subscribe(() => {
         this.tokens.splice(index, 1);
         this.toastr.success('Refresh token deleted');
-      }, err => {
-        this.toastr.error('Error deleting refresh token');
       });
   }
 }

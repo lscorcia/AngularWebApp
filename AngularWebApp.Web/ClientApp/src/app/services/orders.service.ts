@@ -3,6 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+export interface Order {
+  orderId: number;
+  customerName: string;
+  shipperCity: string;
+  isShipped: boolean;
+}
+
 @Injectable()
 export class OrdersService {
   constructor(private http: HttpClient, 
@@ -15,17 +22,7 @@ export class OrdersService {
         .subscribe(response => {
           observer.next(response);
           observer.complete();
-        }, err => {
-          console.log(err);
-          observer.error(err);
         });
     });
   }
-}
-
-export interface Order {
-  orderId: number;
-  customerName: string;
-  shipperCity: string;
-  isShipped: boolean;
 }
