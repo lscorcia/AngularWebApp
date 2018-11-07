@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Configuration;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -166,6 +168,11 @@ namespace AngularWebApp.Web
                     RequireHeaderSymmetry = false
                 });
             }
+
+            // Load the index.html page when the url is invoked without the ending '/'
+            // Avoids problems with Angular when loading http://domain/AngularWebApp instead of http://domain/AngularWebApp/
+            app.UseRewriter(new RewriteOptions()
+                .AddRedirect(@"^$", "/index.html", (int)HttpStatusCode.MovedPermanently));
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
