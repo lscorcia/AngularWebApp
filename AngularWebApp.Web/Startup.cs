@@ -100,8 +100,8 @@ namespace AngularWebApp.Web
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
 
-                        ValidIssuer = Configuration.GetValue<string>("JwtTokenIssuer"),
-                        ValidAudience = Configuration.GetValue<string>("JwtTokenAudience"),
+                        ValidIssuer = Configuration.GetValue<string>("JwtToken:Issuer"),
+                        ValidAudience = Configuration.GetValue<string>("JwtToken:Audience"),
                         IssuerSigningKey = GetTokenSigningKey(),
                         ClockSkew = TimeSpan.Zero   //the default for this setting is 5 minutes
                     };
@@ -216,7 +216,7 @@ namespace AngularWebApp.Web
         #region Private Helpers
         private SymmetricSecurityKey GetTokenSigningKey()
         {
-            var tokenSigningKeyString = Configuration.GetValue<string>("JwtTokenSigningKey");
+            var tokenSigningKeyString = Configuration.GetValue<string>("JwtToken:SigningKey");
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKeyString));
         }
         #endregion

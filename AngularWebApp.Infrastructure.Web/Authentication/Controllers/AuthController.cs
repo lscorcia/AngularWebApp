@@ -32,6 +32,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         public async Task<string> NewRefreshToken(string clientId, string username, string accessToken)
         {
+            var refreshTokenExpiration = config.GetValue<int>("RefreshToken:Expiration");
+
             var newRefreshTokenString = GenerateRefreshTokenString();
 
             var newRefreshToken = new RefreshToken();
@@ -40,7 +42,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             newRefreshToken.Subject = username;
             newRefreshToken.ProtectedTicket = accessToken;
             newRefreshToken.IssuedUtc = DateTime.UtcNow;
-            newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddDays(1);
+            newRefreshToken.ExpiresUtc = DateTime.UtcNow.AddSeconds(refreshTokenExpiration);
 
             var existingToken = authDb.RefreshTokens.SingleOrDefault(r => r.Subject == newRefreshToken.Subject && r.ClientId == newRefreshToken.ClientId);
                 if (existingToken != null)
@@ -55,14 +57,15 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         public string GenerateAccessTokenString(IEnumerable<Claim> claims)
         {
-            var tokenIssuerString = config.GetValue<string>("JwtTokenIssuer");
-            var tokenAudienceString = config.GetValue<string>("JwtTokenAudience");
+            var tokenIssuerString = config.GetValue<string>("JwtToken:Issuer");
+            var tokenAudienceString = config.GetValue<string>("JwtToken:Audience");
+            var tokenExpiration = config.GetValue<int>("JwtToken:Expiration");
 
             var jwt = new JwtSecurityToken(issuer: tokenIssuerString,
                 audience: tokenAudienceString,
                 claims: claims, //the user's claims, for example new Claim[] { new Claim(ClaimTypes.Name, "The username"), //... 
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(1),
+                expires: DateTime.UtcNow.AddSeconds(tokenExpiration),
                 signingCredentials: new SigningCredentials(GetTokenSigningKey(), SecurityAlgorithms.HmacSha256)
             );
 
@@ -72,8 +75,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            var tokenIssuerString = config.GetValue<string>("JwtTokenIssuer");
-            var tokenAudienceString = config.GetValue<string>("JwtTokenAudience");
+            var tokenIssuerString = config.GetValue<string>("JwtToken:Issuer");
+            var tokenAudienceString = config.GetValue<string>("JwtToken:Audience");
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -141,7 +144,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 
         private SymmetricSecurityKey GetTokenSigningKey()
         {
-            var tokenSigningKeyString = config.GetValue<string>("JwtTokenSigningKey");
+            var tokenSigningKeyString = config.GetValue<string>("JwtToken:SigningKey");
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSigningKeyString));
         }
         #endregion
