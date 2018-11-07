@@ -58,6 +58,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="app_offline.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
