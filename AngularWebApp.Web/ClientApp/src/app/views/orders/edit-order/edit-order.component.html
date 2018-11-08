@@ -29,7 +29,7 @@
     </div>
     <div class="card-footer">
       <a class="btn btn-primary active mr-1" backButton><i class="fa fa-arrow-circle-left"></i> Cancel</a>
-      <button class="btn btn-primary active mr-1" [disabled]="!editForm.valid" (onclick)="editForm.submit()"><i class="fa fa-save"></i> Save</button>
-</div>
+      <button class="btn btn-primary active mr-1" [disabled]="!editForm.valid" (onclick)="onSubmit()"><i class="fa fa-save"></i> Save</button>
+    </div>
   </form>
 </div>
