@@ -22,17 +22,84 @@ namespace AngularWebApp.Backend.Orders.Services
 
         public async Task<List<GetOrdersOutputDto>> GetOrders()
         {
-            OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString };
+            using (OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString })
+            { 
+                return await dbContext.Orders
+                    .Select(t => new GetOrdersOutputDto()
+                    {
+                        OrderID = t.OrderID,
+                        CustomerName = t.CustomerName,
+                        ShipperCity = t.ShipperCity,
+                        IsShipped = t.IsShipped
+                    })
+                    .ToListAsync();
+            }
+        }
 
-            return await dbContext.Orders
-                .Select(t => new GetOrdersOutputDto()
+        public async Task<GetOrdersOutputDto> Get(int id)
+        {
+            using (OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString })
+            {
+                var entity = await dbContext.Orders
+                    .FirstOrDefaultAsync(t => t.OrderID == id);
+                if (entity == null)
+                    return null;
+
+                return new GetOrdersOutputDto()
                 {
-                    OrderID = t.OrderID,
-                    CustomerName = t.CustomerName,
-                    ShipperCity = t.ShipperCity,
-                    IsShipped = t.IsShipped
-                })
-                .ToListAsync();
+                    OrderID = entity.OrderID,
+                    CustomerName = entity.CustomerName,
+                    ShipperCity = entity.ShipperCity,
+                    IsShipped = entity.IsShipped
+                };
+            }
+        }
+
+        public async Task<int> AddOrder(AddOrderInputDto dto)
+        {
+            Order order = new Order()
+            {
+                CustomerName = dto.CustomerName,
+                IsShipped = dto.IsShipped,
+                ShipperCity = dto.ShipperCity
+            };
+
+            using (OrdersDbContext dbContext = new OrdersDbContext() {ConnectionString = _connectionString})
+            {
+                dbContext.Orders.Add(order);
+
+                await dbContext.SaveChangesAsync();
+
+                return order.OrderID;
+            }
+        }
+
+        public async Task Delete(int id)
+        {
+            using (OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString })
+            {
+                var order = await dbContext.Orders.FindAsync(id);
+                if (order != null)
+                    dbContext.Orders.Remove(order);
+
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task EditOrder(EditOrderInputDto model)
+        {
+            using (OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString })
+            {
+                var order = await dbContext.Orders.FindAsync(model.OrderID);
+                if (order == null)
+                    throw new Exception(String.Format("Order ID '{0}' not found!", model.OrderID));
+
+                order.CustomerName = model.CustomerName;
+                order.ShipperCity = model.ShipperCity;
+                order.IsShipped = model.IsShipped;
+
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }
