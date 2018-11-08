@@ -53,7 +53,7 @@ export class OrdersService {
   }
 
   edit(order: Order) {
-    var parameters = { Id: order.orderId, customerName: order.customerName, isShipped: order.isShipped, shipperCity: order.shipperCity };
+    var parameters = { orderId: order.orderId, customerName: order.customerName, isShipped: order.isShipped, shipperCity: order.shipperCity };
 
     return new Observable((observer) => {
       return this.http.post(this.baseUrl + "api/orders/edit", parameters)

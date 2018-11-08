@@ -33,23 +33,23 @@ export class OrdersComponent {
       }
     });*/
     if (orderId == null) {
-      var order = new Order();
-      order.customerName = 'Luca';
-      order.isShipped = false;
-      order.shipperCity = 'Bari';
+      var newOrder = new Order();
+      newOrder.customerName = 'Luca';
+      newOrder.isShipped = false;
+      newOrder.shipperCity = 'Bari';
 
-      this.ordersService.add(order)
+      this.ordersService.add(newOrder)
         .subscribe((response) => {
           this.refresh();
         });
     } else {
-      var order = new Order();
-      order.orderId = orderId;
-      order.customerName = 'Chiara';
-      order.isShipped = true;
-      order.shipperCity = 'Bari';
+      var editOrder = new Order();
+      editOrder.orderId = orderId;
+      editOrder.customerName = 'Chiara';
+      editOrder.isShipped = true;
+      editOrder.shipperCity = 'Bari';
 
-      this.ordersService.add(order)
+      this.ordersService.edit(editOrder)
         .subscribe((response) => {
           this.refresh();
         });
