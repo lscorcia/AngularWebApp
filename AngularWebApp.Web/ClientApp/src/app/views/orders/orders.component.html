@@ -28,11 +28,11 @@
       <tbody>
         <tr *ngFor="let order of orders; index as i">
           <td class="text-center">
-            <a class="btn btn-outline-primary btn-sm mr-1" [routerLink]="[order.orderID, 'edit']" title="Edit"><i class="fa fa-edit"></i></a>
-            <button type="button" class="btn btn-outline-primary btn-sm" (click)="delete(i, order.orderID)" title="Delete"><i class="fa fa-trash"></i></button>
+            <a class="btn btn-outline-primary btn-sm mr-1" [routerLink]="[order.orderId, 'edit']" title="Edit"><i class="fa fa-edit"></i></a>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="delete(i, order.orderId)" title="Delete"><i class="fa fa-trash"></i></button>
           </td>
           <td>
-            {{ order.orderID }}
+            {{ order.orderId }}
           </td>
           <td>
             {{ order.customerName }}

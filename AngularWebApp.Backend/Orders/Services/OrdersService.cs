@@ -27,7 +27,7 @@ namespace AngularWebApp.Backend.Orders.Services
                 return await dbContext.Orders
                     .Select(t => new GetOrdersOutputDto()
                     {
-                        OrderID = t.OrderID,
+                        OrderId = t.OrderID,
                         CustomerName = t.CustomerName,
                         ShipperCity = t.ShipperCity,
                         IsShipped = t.IsShipped
@@ -47,7 +47,7 @@ namespace AngularWebApp.Backend.Orders.Services
 
                 return new GetOrdersOutputDto()
                 {
-                    OrderID = entity.OrderID,
+                    OrderId = entity.OrderID,
                     CustomerName = entity.CustomerName,
                     ShipperCity = entity.ShipperCity,
                     IsShipped = entity.IsShipped
@@ -90,9 +90,9 @@ namespace AngularWebApp.Backend.Orders.Services
         {
             using (OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString })
             {
-                var order = await dbContext.Orders.FindAsync(model.OrderID);
+                var order = await dbContext.Orders.FindAsync(model.OrderId);
                 if (order == null)
-                    throw new Exception(String.Format("Order ID '{0}' not found!", model.OrderID));
+                    throw new Exception(String.Format("Order ID '{0}' not found!", model.OrderId));
 
                 order.CustomerName = model.CustomerName;
                 order.ShipperCity = model.ShipperCity;

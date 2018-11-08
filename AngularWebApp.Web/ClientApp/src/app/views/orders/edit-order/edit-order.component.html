@@ -7,18 +7,18 @@
     <div class="modal-body">
       <div class="form-group">
         <div>
-          <label for="role" class="col-form-label">Customer Name</label>
-          <input type="text" id="role" name="role" placeholder="Customer Name" class="form-control"
-                 [formControl]="editForm.controls['role']" required
-                 [class.is-invalid]="!editForm.controls['role'].valid && editForm.controls['role'].touched" />
-          <em *ngIf="editForm.controls['role'].hasError('required')" class="invalid-feedback">Field Customer Name is required</em>
+          <label for="customerName" class="col-form-label">Customer Name</label>
+          <input type="text" id="customerName" name="customerName" placeholder="Customer Name" class="form-control"
+                 [formControl]="editForm.controls['customerName']" required
+                 [class.is-invalid]="!editForm.controls['customerName'].valid && editForm.controls['customerName'].touched" />
+          <em *ngIf="editForm.controls['customerName'].hasError('required')" class="invalid-feedback">Field Customer Name is required</em>
         </div>
         <div>
-          <label for="username" class="col-form-label">Shipper City</label>
-          <input type="text" id="username" name="username" placeholder="Shipper City" class="form-control"
-                 [formControl]="editForm.controls['username']" required
-                 [class.is-invalid]="!editForm.controls['username'].valid && editForm.controls['username'].touched">
-          <em *ngIf="editForm.controls['username'].hasError('required')" class="invalid-feedback">Field Shipper City is required</em>
+          <label for="shipperCity" class="col-form-label">Shipper City</label>
+          <input type="text" id="shipperCity" name="shipperCity" placeholder="Shipper City" class="form-control"
+                 [formControl]="editForm.controls['shipperCity']" required
+                 [class.is-invalid]="!editForm.controls['shipperCity'].valid && editForm.controls['shipperCity'].touched">
+          <em *ngIf="editForm.controls['shipperCity'].hasError('required')" class="invalid-feedback">Field Shipper City is required</em>
         </div>
         <div class="form-check">
           <input type="checkbox" id="chkShipped" name="chkShipped" class="form-check-input"
@@ -29,7 +29,7 @@
     </div>
     <div class="card-footer">
       <a class="btn btn-primary active mr-1" backButton><i class="fa fa-arrow-circle-left"></i> Cancel</a>
-      <input type="submit" class="btn btn-primary active mr-1" (click)="onSubmit();" [disabled]="!editForm.valid" value="Save" />
-    </div>
+      <button class="btn btn-primary active mr-1" [disabled]="!editForm.valid" (onclick)="editForm.submit()"><i class="fa fa-save"></i> Save</button>
+</div>
   </form>
 </div>
