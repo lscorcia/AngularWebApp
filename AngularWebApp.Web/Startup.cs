@@ -12,6 +12,7 @@ using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
@@ -171,8 +172,15 @@ namespace AngularWebApp.Web
 
             // Load the index.html page when the url is invoked without the ending '/'
             // Avoids problems with Angular when loading http://domain/AngularWebApp instead of http://domain/AngularWebApp/
-            app.UseRewriter(new RewriteOptions()
-                .AddRedirect(@"^$", "/index.html", (int)HttpStatusCode.MovedPermanently));
+            app.UseRewriter(new RewriteOptions().Add(rewriteContext =>
+            {
+                var request = rewriteContext.HttpContext.Request;
+                if (request.Path == PathString.Empty)
+                {
+                    rewriteContext.HttpContext.Response.Redirect(request.PathBase + '/', true);
+                    rewriteContext.Result = RuleResult.EndResponse;
+                }
+            }));
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
