@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { OrdersComponent } from './orders.component';
 import { EditOrderComponent } from "./edit-order/edit-order.component";
 import { AuthGuard } from "../../guards/auth-guard.service";
+import { OrderDetailResolverService } from "../../services/order-detail-resolver.service";
 
 const routes: Routes = [
   {
@@ -28,11 +29,14 @@ const routes: Routes = [
         }
       },
       {
-        path: ':orderid/edit',
+        path: ':orderId/edit',
         component: EditOrderComponent,
         canActivate: [AuthGuard],
         data: {
           title: 'Edit order'
+        },
+        resolve: {
+          order: OrderDetailResolverService
         }
       }
     ]

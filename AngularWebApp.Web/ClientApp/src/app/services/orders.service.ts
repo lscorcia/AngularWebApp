@@ -10,7 +10,9 @@ export class Order {
   isShipped: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class OrdersService {
   constructor(private http: HttpClient, 
     @Inject('BASE_URL') private baseUrl: string) {
@@ -28,7 +30,7 @@ export class OrdersService {
 
   get(id: number): Observable<Order> {
     return new Observable((observer) => {
-      return this.http.get(this.baseUrl + "api/roles/get/" + id)
+      return this.http.get(this.baseUrl + "api/orders/get/" + id)
         .subscribe((response: Order) => {
           observer.next(response);
           observer.complete();
