@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
-using AngularWebApp.Infrastructure.Web.Authentication.Repository;
-using AngularWebApp.Infrastructure.Web.ErrorHandling;
+using AngularWebApp.Infrastructure.Web.Authentication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
 {
@@ -20,39 +16,25 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     [Authorize(Roles = "Administrators")]
     public class UserRolesController : ControllerBase
     {
-        private readonly ILogger<UserRolesController> log;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly UserRolesService userRolesServices;
 
-        public UserRolesController(ILogger<UserRolesController> _log,
-            UserManager<ApplicationUser> _userManager)
+        public UserRolesController(UserRolesService _userRolesServices)
         {
-            log = _log;
-            userManager = _userManager;
+            userRolesServices = _userRolesServices;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<GetUserRolesOutputDto>> List()
         {
-            return userManager.Users.Include(t => t.UserRoles).ThenInclude(ur => ur.Role)
-                .SelectMany(t => t.UserRoles)
-                .Select(t => new GetUserRolesOutputDto() { UserName = t.User.UserName, Role = t.Role.Name })
-                .OrderBy(t => t.Role).ThenBy(t => t.UserName)
-                .ToList();
+            return userRolesServices.GetAll().ToList();
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> Add(AddUserToRoleInputDto model)
+        public async Task<ActionResult> Add(AddUserToRoleInputDto model)
         {
-            log.LogInformation("Adding user {0} to role {1}", model.UserName, model.Role);
-
-            var user = await userManager.FindByNameAsync(model.UserName);
-            if (user == null)
-                return BadRequest(new ErrorResponse(String.Format("User '{0}' not found!", model.UserName)));
-
-            await userManager.AddToRoleAsync(user, model.Role);
-
+            await userRolesServices.Add(model);
             return Ok();
         }
 
@@ -60,12 +42,11 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> Delete(string roleName, string userName)
         {
-            log.LogInformation("Deleting user {0} from role {1}", userName, roleName);
+            DeleteUserFromRoleInputDto model = new DeleteUserFromRoleInputDto();
+            model.RoleName = roleName;
+            model.UserName = userName;
 
-            var user = await userManager.FindByNameAsync(userName);
-            if (user != null)
-                await userManager.RemoveFromRoleAsync(user, roleName);
-
+            await userRolesServices.Delete(model);
             return Ok();
         }
     }

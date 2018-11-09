@@ -6,27 +6,28 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AngularWebApp.Infrastructure.DI;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
+namespace AngularWebApp.Infrastructure.Web.Authentication.Services
 {
-    public class AuthController : Controller
+    public class AuthService : IApplicationService
     {
-        private readonly ILogger<AuthController> log;
+        private readonly ILogger<AuthService> log;
         private readonly IConfiguration config;
         private readonly AuthDbContext authDb;
 
-        public AuthController(IServiceProvider _sp, IConfiguration _config, ILogger<AuthController> _log)
+        public AuthService(IServiceProvider _sp, IConfiguration _config, ILogger<AuthService> _log)
         {
             log = _log;
             config = _config;
            
             // Objects obtained through DI shouldn't be disposed
+            // We need to locate the service explicitly because the class is not public and can't be injected
             authDb = _sp.GetService<AuthDbContext>();
         }
 

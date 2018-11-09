@@ -8,6 +8,7 @@ using AngularWebApp.Infrastructure.ActiveDirectory.Models;
 using AngularWebApp.Infrastructure.ActiveDirectory.Services;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.Authentication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,17 +20,17 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     [ApiController]
     public class WindowsAuthController : ControllerBase
     {
-        private readonly AuthController authController;
+        private readonly AuthService authService;
         private readonly ILogger<WindowsAuthController> log;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<ApplicationRole> roleManager;
         private readonly ActiveDirectoryService activeDirectoryController;
 
-        public WindowsAuthController(AuthController _authController, ILogger<WindowsAuthController> _log,
+        public WindowsAuthController(AuthService _authService, ILogger<WindowsAuthController> _log,
             ActiveDirectoryService _activeDirectoryController,
             UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager)
         {
-            authController = _authController;
+            authService = _authService;
             activeDirectoryController = _activeDirectoryController;
             log = _log;
             userManager = _userManager;
@@ -68,8 +69,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             }
 
             var claims = await GetUserClaims(user);
-            var accessTokenString = authController.GenerateAccessTokenString(claims);
-            var refreshTokenString = await authController.NewRefreshToken(model.ClientId, userName, accessTokenString);
+            var accessTokenString = authService.GenerateAccessTokenString(claims);
+            var refreshTokenString = await authService.NewRefreshToken(model.ClientId, userName, accessTokenString);
 
             return Ok(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
         }

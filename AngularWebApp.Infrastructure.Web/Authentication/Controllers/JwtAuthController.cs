@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
 using AngularWebApp.Infrastructure.Web.Authentication.Repository;
+using AngularWebApp.Infrastructure.Web.Authentication.Services;
 using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,15 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     [ApiController]
     public class JwtAuthController : ControllerBase
     {
-        private readonly AuthController authController;
+        private readonly AuthService authService;
         private readonly ILogger<JwtAuthController> log;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<ApplicationRole> roleManager;
 
-        public JwtAuthController(AuthController _authController, ILogger<JwtAuthController> _log,
+        public JwtAuthController(AuthService _authService, ILogger<JwtAuthController> _log,
             UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager)
         {
-            authController = _authController;
+            authService = _authService;
             log = _log;
             userManager = _userManager;
             roleManager = _roleManager;
@@ -43,8 +44,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
             if (isValidLogin)
             {
                 var claims = await GetUserClaims(user);
-                var accessTokenString = authController.GenerateAccessTokenString(claims);
-                var refreshTokenString = await authController.NewRefreshToken(model.ClientId, user.UserName, accessTokenString);
+                var accessTokenString = authService.GenerateAccessTokenString(claims);
+                var refreshTokenString = await authService.NewRefreshToken(model.ClientId, user.UserName, accessTokenString);
 
                 return Ok(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
             }
@@ -82,17 +83,17 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         [HttpPost]
         public async Task<IActionResult> Refresh(RefreshTokenModel model)
         {
-            var principal = authController.GetPrincipalFromExpiredToken(model.AccessToken);
+            var principal = authService.GetPrincipalFromExpiredToken(model.AccessToken);
             if (principal == null)
                 return BadRequest(new ErrorResponse("Principal for token not found"));
 
             log.LogDebug("Refreshing token for user {0}...", principal.Identity.Name);
 
             // retrieve the refresh token from a data store
-            await authController.RemoveExistingRefreshToken(model.ClientId, model.AccessToken, model.RefreshToken);
+            await authService.RemoveExistingRefreshToken(model.ClientId, model.AccessToken, model.RefreshToken);
             
-            var accessTokenString = authController.GenerateAccessTokenString(principal.Claims);
-            var refreshTokenString = await authController.NewRefreshToken(model.ClientId, principal.Identity.Name, accessTokenString);
+            var accessTokenString = authService.GenerateAccessTokenString(principal.Claims);
+            var refreshTokenString = await authService.NewRefreshToken(model.ClientId, principal.Identity.Name, accessTokenString);
 
             return new ObjectResult(new { AccessToken = accessTokenString, RefreshToken = refreshTokenString });
         }
