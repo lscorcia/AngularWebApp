@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 
 import { ModalModule } from 'ngx-bootstrap/modal';
 
-import { RolesService } from "../../../services/roles.service";
-import { UserRolesService } from '../../../services/userroles.service';
+import { RolesService } from "../../../../services/roles.service";
+import { UserRolesService } from '../../../../services/userroles.service';
 
 import { UserRolesComponent } from './user-roles.component';
 import { UserRolesRoutingModule } from './user-roles-routing.module';

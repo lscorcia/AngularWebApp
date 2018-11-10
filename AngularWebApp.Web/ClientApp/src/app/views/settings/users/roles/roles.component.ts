@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { RolesService, Role } from '../../../services/roles.service';
+import { RolesService, Role } from '../../../../services/roles.service';
 import { EditRolePopupComponent } from './edit-role-popup/edit-role-popup.component';
 
 @Component({

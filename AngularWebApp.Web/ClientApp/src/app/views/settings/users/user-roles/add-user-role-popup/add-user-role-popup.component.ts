@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserRolesService, UserRole } from '../../../../services/userroles.service';
+import { UserRolesService, UserRole } from '../../../../../services/userroles.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs/Subject';
 import { ToastrService } from 'ngx-toastr';
-import { RolesService } from "../../../../services/roles.service";
+import { RolesService } from "../../../../../services/roles.service";
 
 @Component({
   selector: 'app-add-user-role-popup',

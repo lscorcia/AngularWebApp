@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RolesService, Role } from '../../../../services/roles.service';
+import { RolesService, Role } from '../../../../../services/roles.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs/Subject';
 import { ToastrService } from 'ngx-toastr';

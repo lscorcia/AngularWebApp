@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { AuthenticationService, Token } from '../../../services/authentication.service';
+import { AuthenticationService, Token } from '../../../../services/authentication.service';
 
 @Component({
   selector: 'app-refresh-tokens',

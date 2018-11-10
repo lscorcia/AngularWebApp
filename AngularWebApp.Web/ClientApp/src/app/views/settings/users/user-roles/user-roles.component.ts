@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { UserRolesService, UserRole } from '../../../services/userroles.service';
+import { UserRolesService, UserRole } from '../../../../services/userroles.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { AddUserRolePopupComponent } from "./add-user-role-popup/add-user-role-popup.component";
 
