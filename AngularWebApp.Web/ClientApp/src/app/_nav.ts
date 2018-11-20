@@ -1,17 +1,25 @@
-export const navItems = [
+export var navTree = [
   {
     name: 'Dashboard',
     url: '/dashboard',
-    icon: 'icon-speedometer'
+    icon: 'icon-speedometer',
+    roles: ['*']
   },
   {
     title: true,
-    name: 'Weather'
+    name: 'Weather',
+    roles: ['*']
   },
   {
     name: 'Weather',
     url: '/weather',
-    icon: 'icon-drop'
+    icon: 'icon-drop',
+    roles: ['*']
+  },
+  {
+    title: true,
+    name: 'Orders',
+    roles: ['Super User']
   },
   {
     name: 'Orders',
@@ -20,15 +28,18 @@ export const navItems = [
     badge: {
       variant: 'info',
       text: 'NEW'
-    }
+    },
+    roles: ['Super User']
   },
   {
     title: true,
-    name: 'Settings'
+    name: 'Settings',
+    roles: []
   },
   {
     name: 'Users',
     icon: 'icon-people',
+    roles: [],
     children: [
       {
         name: 'Roles',

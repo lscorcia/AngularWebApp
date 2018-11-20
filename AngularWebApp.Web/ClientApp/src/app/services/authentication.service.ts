@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/Observable';
 export class AuthInfo {
   public UserName: string; 
   public Email: string;
+  public Roles: string[];
 }
 
 interface LoginResponse {
@@ -122,6 +123,9 @@ export class AuthenticationService {
 
       authInfo.UserName = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
       authInfo.Email = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email'];
+
+      var roles = decodedContent['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      authInfo.Roles = Array.isArray(roles) ? roles : [roles];
     }
 
     return authInfo;
@@ -196,5 +200,18 @@ export class AuthenticationService {
           observer.error(err);
         });
     });
+  }
+
+  public isAdministrator(): boolean {
+    return this.isInRole('administrators');
+  }
+
+  public isInRole(role: string) {
+    return this.isInAnyRole([ role ]);
+  }
+
+  public isInAnyRole(roles: string[]) {
+    return this.AuthInfo.Roles.map(t => t.toLowerCase())
+      .some(r => roles.map(t => t.toLowerCase()).includes(r));
   }
 }
