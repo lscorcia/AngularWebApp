@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngularWebApp.Infrastructur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngularWebApp.Infrastructure.Web", "AngularWebApp.Infrastructure.Web\AngularWebApp.Infrastructure.Web.csproj", "{BAEF9DD2-B0BD-461A-B650-CE262A4AA5D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularWebApp.Backend", "AngularWebApp.Backend\AngularWebApp.Backend.csproj", "{02BE8EB5-11FB-4EC9-82D8-A6495591617F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngularWebApp.Backend", "AngularWebApp.Backend\AngularWebApp.Backend.csproj", "{02BE8EB5-11FB-4EC9-82D8-A6495591617F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

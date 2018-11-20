@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web;
 using AngularWebApp.Backend.Orders.Models;
 using AngularWebApp.Backend.Orders.Services;
-using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
