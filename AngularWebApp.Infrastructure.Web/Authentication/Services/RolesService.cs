@@ -44,6 +44,15 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Services
             return new GetRoleOutputDto() { Id = entity.Id, Name = entity.Name };
         }
 
+        public GetRoleOutputDto GetOneByName(string roleName)
+        {
+            var entity = roleManager.Roles.FirstOrDefault(t => t.Name == roleName);
+            if (entity == null)
+                return null;
+
+            return new GetRoleOutputDto() { Id = entity.Id, Name = entity.Name };
+        }
+
         public async Task<string> Add(AddRoleInputDto model)
         {
             log.LogInformation("Adding role {0}", model.Name);
@@ -101,7 +110,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Services
         private async void EnsureAdministratorRole()
         {
             // Ensure the Administrator role exists
-            var adminRole = GetOne(AdministratorRoleName);
+            var adminRole = GetOneByName(AdministratorRoleName);
             if (adminRole == null)
                 await Add(new AddRoleInputDto() { Name = AdministratorRoleName });
         }
