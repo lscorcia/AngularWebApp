@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.DI;
@@ -13,6 +14,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Services
 {
     public class RolesService: IApplicationService
     {
+        public const string AdministratorRoleName = "Administrators";
+
         private readonly ILogger<UserRolesService> log;
         private readonly RoleManager<ApplicationRole> roleManager;
 
@@ -21,6 +24,8 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Services
         {
             log = _log;
             roleManager = _roleManager;
+
+            EnsureAdministratorRole();
         }
 
         public IEnumerable<GetRoleOutputDto> GetAll()
@@ -73,5 +78,33 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Services
             if (role != null)
                 await roleManager.DeleteAsync(role);
         }
+
+        public async Task<List<Claim>> GetClaimsForRole(string userRole)
+        {
+            List<Claim> claims = new List<Claim>();
+
+            var role = await roleManager.FindByNameAsync(userRole);
+            if (role != null)
+            {
+                var roleClaims = await roleManager.GetClaimsAsync(role);
+                if (roleClaims != null)
+                {
+                    foreach (Claim roleClaim in roleClaims)
+                        claims.Add(roleClaim);
+                }
+            }
+
+            return claims;
+        }
+
+        #region Private Helpers
+        private async void EnsureAdministratorRole()
+        {
+            // Ensure the Administrator role exists
+            var adminRole = GetOne(AdministratorRoleName);
+            if (adminRole == null)
+                await Add(new AddRoleInputDto() { Name = AdministratorRoleName });
+        }
+        #endregion
     }
 }

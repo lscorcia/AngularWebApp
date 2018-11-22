@@ -20,15 +20,15 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         private readonly AuthService authService;
         private readonly ILogger<JwtAuthController> log;
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly RoleManager<ApplicationRole> roleManager;
+        private readonly RolesService rolesService;
 
         public JwtAuthController(AuthService _authService, ILogger<JwtAuthController> _log,
-            UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager)
+            UserManager<ApplicationUser> _userManager, RolesService _rolesService)
         {
             authService = _authService;
             log = _log;
             userManager = _userManager;
-            roleManager = _roleManager;
+            rolesService = _rolesService;
         }
 
         [HttpPost]
@@ -118,13 +118,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, userRole));
 
                 // Add role claims
-                var role = await roleManager.FindByNameAsync(userRole);
-                if (role != null)
-                {
-                    var roleClaims = await roleManager.GetClaimsAsync(role);
-                    foreach (Claim roleClaim in roleClaims)
-                        claims.Add(roleClaim);
-                }
+                claims.AddRange(await rolesService.GetClaimsForRole(userRole));
             }
 
             return claims;

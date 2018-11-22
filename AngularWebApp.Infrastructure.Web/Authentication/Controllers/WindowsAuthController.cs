@@ -23,18 +23,18 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         private readonly AuthService authService;
         private readonly ILogger<WindowsAuthController> log;
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly RoleManager<ApplicationRole> roleManager;
+        private readonly RolesService rolesService;
         private readonly ActiveDirectoryService activeDirectoryController;
 
         public WindowsAuthController(AuthService _authService, ILogger<WindowsAuthController> _log,
             ActiveDirectoryService _activeDirectoryController,
-            UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager)
+            UserManager<ApplicationUser> _userManager, RolesService _rolesService)
         {
             authService = _authService;
             activeDirectoryController = _activeDirectoryController;
             log = _log;
             userManager = _userManager;
-            roleManager = _roleManager;
+            rolesService = _rolesService;
         }
 
         [HttpPost]
@@ -98,16 +98,7 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
                     claims.Add(new Claim(ClaimTypes.Role, userRole));
 
                     // Add role claims
-                    var role = await roleManager.FindByNameAsync(userRole);
-                    if (role != null)
-                    {
-                        var roleClaims = await roleManager.GetClaimsAsync(role);
-                        if (roleClaims != null)
-                        { 
-                            foreach (Claim roleClaim in roleClaims)
-                                claims.Add(roleClaim);
-                        }
-                    }
+                    claims.AddRange(await rolesService.GetClaimsForRole(userRole));
                 }
             }
 

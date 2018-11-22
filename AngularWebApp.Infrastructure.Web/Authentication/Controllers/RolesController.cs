@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AngularWebApp.Infrastructure.Web.Authentication.Models;
-using AngularWebApp.Infrastructure.Web.Authentication.Repository;
 using AngularWebApp.Infrastructure.Web.Authentication.Services;
-using AngularWebApp.Infrastructure.Web.ErrorHandling;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,17 +17,14 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
     [Authorize(Roles = "Administrators")]
     public class RolesController : ControllerBase
     {
-        private readonly ILogger<WindowsAuthController> log;
-        private readonly RoleManager<ApplicationRole> roleManager;
+        private readonly ILogger<RolesController> log;
         private readonly RolesService rolesService;
 
-        public RolesController(ILogger<WindowsAuthController> _log,
-            RolesService _rolesService,
-            RoleManager<ApplicationRole> _roleManager)
+        public RolesController(ILogger<RolesController> _log,
+            RolesService _rolesService)
         {
             log = _log;
             rolesService = _rolesService;
-            roleManager = _roleManager;
         }
 
         [HttpGet]
@@ -57,7 +51,6 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         public async Task<ActionResult<string>> Add(AddRoleInputDto model)
         {
             var roleId = await rolesService.Add(model);
-
             return CreatedAtAction(nameof(Get), new { id = roleId }, new { id = roleId });
         }
 
@@ -75,7 +68,6 @@ namespace AngularWebApp.Infrastructure.Web.Authentication.Controllers
         public async Task<ActionResult> Delete(string id)
         {
             await rolesService.Delete(id);
-
             return Ok();
         }
     }
