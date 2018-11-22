@@ -48,15 +48,16 @@ export class AuthenticationService {
       let parameters = { clientId: this.clientId, username: username, password: password };
       return this.http.post(this.baseUrl + "api/jwtauth/login", parameters)
         .subscribe((response: LoginResponse) => {
-        var accessToken = response.accessToken;
-        var refreshToken = response.refreshToken;
-        this.setSession(accessToken, refreshToken);
+          var accessToken = response.accessToken;
+          var refreshToken = response.refreshToken;
+          this.setSession(accessToken, refreshToken);
 
-        observer.next(accessToken);
-        observer.complete();
-      }, err => {
-        observer.error(err);
-      });
+          observer.next(accessToken);
+          observer.complete();
+        }, err => {
+          this.logout();
+          observer.error(err);
+        });
     });
   }
 
@@ -67,15 +68,16 @@ export class AuthenticationService {
       let parameters = { clientId: this.clientId, accessToken: oldAccessToken, refreshToken: oldRefreshToken };
       return this.http.post(this.baseUrl + "api/jwtauth/refresh", parameters)
         .subscribe((response: LoginResponse) => {
-        var accessToken = response.accessToken;
-        var refreshToken = response.refreshToken;
-        this.setSession(accessToken, refreshToken);
+          var accessToken = response.accessToken;
+          var refreshToken = response.refreshToken;
+          this.setSession(accessToken, refreshToken);
 
-        observer.next(accessToken);
-        observer.complete();
-      }, err => {
-        observer.error(err);
-      });
+          observer.next(accessToken);
+          observer.complete();
+        }, err => {
+          this.logout();
+          observer.error(err);
+        });
     });
   }
 
@@ -91,6 +93,7 @@ export class AuthenticationService {
           observer.next(accessToken);
           observer.complete();
         }, err => {
+          this.logout();
           observer.error(err);
         });
     });
@@ -125,7 +128,7 @@ export class AuthenticationService {
       authInfo.Email = decodedContent['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email'];
 
       var roles = decodedContent['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-      authInfo.Roles = Array.isArray(roles) ? roles : [roles];
+      authInfo.Roles = Array.isArray(roles || []) ? roles : [roles];
     }
 
     return authInfo;
@@ -211,6 +214,7 @@ export class AuthenticationService {
   }
 
   public isInAnyRole(roles: string[]) {
+    if (!this.AuthInfo || !this.AuthInfo.Roles || this.AuthInfo.Roles.length === 0) return false;
     return this.AuthInfo.Roles.map(t => t.toLowerCase())
       .some(r => roles.map(t => t.toLowerCase()).includes(r));
   }
