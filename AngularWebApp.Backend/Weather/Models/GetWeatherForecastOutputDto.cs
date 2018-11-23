@@ -6,6 +6,7 @@ namespace AngularWebApp.Backend.Weather.Models
 {
     public class GetWeatherForecastOutputDto
     {
+        public int Id { get; set; }
         public string DateFormatted { get; set; }
         public int TemperatureC { get; set; }
         public string Summary { get; set; }
