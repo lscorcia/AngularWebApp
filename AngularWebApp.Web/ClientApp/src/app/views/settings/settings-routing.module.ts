@@ -10,10 +10,11 @@ const routes: Routes = [
     },
     children: [
       {
+        path: '',
+        redirectTo: 'users',
+      },
+      {
         path: 'users',
-        data: {
-          title: 'Users'
-        },
         loadChildren: './users/users.module#UsersModule',
         canActivate: [AuthGuard]
       }

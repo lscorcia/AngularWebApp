@@ -7,10 +7,22 @@ import { WeatherComponent } from './weather.component';
 const routes: Routes = [
   {
     path: '',
-    component: WeatherComponent,
     data: {
-      title: 'Weather Forecasts'
-    }
+      title: 'Weather'
+    },
+    children: [
+      {
+        path: '',
+        redirectTo: 'forecasts',
+      },
+      {
+        path: 'forecasts',
+        component: WeatherComponent,
+        data: {
+          title: 'Forecasts'
+        }
+      }
+    ]
   }
 ];
 
