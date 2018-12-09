@@ -1,2 +1,2 @@
 # AngularWebApp
-Basic template for an Angular + Bootstrap + ASP.net WebAPI 2 web application
+Basic template for an Angular + Bootstrap + DevExtreme + ASP.net WebAPI 2 web application
