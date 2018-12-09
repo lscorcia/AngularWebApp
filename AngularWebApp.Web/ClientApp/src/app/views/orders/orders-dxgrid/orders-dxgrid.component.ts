@@ -11,6 +11,7 @@ export class OrdersDxgridComponent implements OnInit {
   @ViewChild(DxDataGridComponent) dataGrid: DxDataGridComponent;
 
   dataSource: any = {};
+  currentFilter: any;
 
   constructor(private ordersService: OrdersService, private toastr: ToastrService) {
   }
