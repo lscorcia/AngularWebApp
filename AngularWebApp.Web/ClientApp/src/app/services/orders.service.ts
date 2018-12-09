@@ -1,7 +1,8 @@
 import { Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import CustomStore from 'devextreme/data/custom_store';
 
 export class Order {
   orderId: number;
@@ -25,6 +26,43 @@ export class OrdersService {
           observer.next(response);
           observer.complete();
         });
+    });
+  }
+
+  orders(): CustomStore {
+    function isNotEmpty(value: any): boolean {
+      return value !== undefined && value !== null && value !== "";
+    }
+
+    return new CustomStore({
+      key: "orderId",
+      load: (loadOptions) => {
+        let params: HttpParams = new HttpParams();
+        [
+          "skip",
+          "take",
+          "requireTotalCount",
+          "requireGroupCount",
+          "sort",
+          "filter",
+          "totalSummary",
+          "group",
+          "groupSummary"
+        ].forEach(function (i) {
+          if (i in loadOptions && isNotEmpty(loadOptions[i]))
+            params = params.set(i, JSON.stringify(loadOptions[i]));
+        });
+        return this.http.get(this.baseUrl + "api/Orders/Orders", { params: params })
+          .toPromise<any>()
+          .then(result => {
+            return {
+              data: result.data,
+              totalCount: result.totalCount,
+              summary: result.summary,
+              groupCount: result.groupCount
+            };
+          });
+      }
     });
   }
 

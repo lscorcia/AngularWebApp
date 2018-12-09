@@ -23,7 +23,17 @@ export var navTree = [
   },
   {
     name: 'Orders',
-    url: '/orders',
+    url: '/orders/orders-list',
+    icon: 'icon-notebook',
+    badge: {
+      variant: 'info',
+      text: 'NEW'
+    },
+    roles: ['Super User']
+  },
+  {
+    name: 'Orders DxGrid',
+    url: '/orders/orders-dxgrid',
     icon: 'icon-notebook',
     badge: {
       variant: 'info',

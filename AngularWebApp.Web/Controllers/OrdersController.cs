@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Web;
 using AngularWebApp.Backend.Orders.Models;
 using AngularWebApp.Backend.Orders.Services;
+using AngularWebApp.Infrastructure.Web.Binders;
+using DevExtreme.AspNet.Data.ResponseModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +34,14 @@ namespace AngularWebApp.Web.Controllers
         {
             log.LogInformation("Retrieving orders...");
             return await ordersService.GetOrders();
+        }
+
+        [HttpGet]
+        public LoadResult Orders(DataSourceLoadOptions loadOptions)
+        {
+            log.LogInformation("Retrieving orders...");
+            var resp = ordersService.GetOrders(loadOptions);
+            return resp;
         }
 
         [HttpGet("{id}")]

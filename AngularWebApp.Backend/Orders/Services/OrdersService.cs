@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using AngularWebApp.Backend.Orders.Models;
 using AngularWebApp.Backend.Orders.Repository;
 using AngularWebApp.Infrastructure.DI;
+using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Data.ResponseModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -33,6 +35,27 @@ namespace AngularWebApp.Backend.Orders.Services
                         IsShipped = t.IsShipped
                     })
                     .ToListAsync();
+            }
+        }
+
+        public LoadResult GetOrders(DataSourceLoadOptionsBase loadOptions)
+        {
+            using (OrdersDbContext dbContext = new OrdersDbContext() { ConnectionString = _connectionString })
+            {
+                var queryable = dbContext.Orders
+                    .Select(t => new GetOrdersOutputDto()
+                    {
+                        OrderId = t.OrderID,
+                        CustomerName = t.CustomerName,
+                        ShipperCity = t.ShipperCity,
+                        IsShipped = t.IsShipped
+                    });
+
+                // Enumerate now to avoid the 'context disposed' error
+                var loadResult = DataSourceLoader.Load(queryable, loadOptions);
+                loadResult.data = loadResult.data.Cast<object>().ToList();
+
+                return loadResult;
             }
         }
 
